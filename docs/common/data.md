@@ -20,8 +20,8 @@
 
 ## users
 
-| name      | attribute       | description     |
-|-----------|-----------------|-----------------|
-| id        | primary key     | User ID         |
-| email     | unique, NotNull | User email      |
-| password  | NotNull         | Hashed password |
+| name     | attribute       | description     |
+|----------|-----------------|-----------------|
+| id       | primary key     | User ID         |
+| username | unique, NotNull | User email      |
+| password | NotNull         | Hashed password |
