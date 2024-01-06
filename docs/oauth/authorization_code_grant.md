@@ -35,9 +35,9 @@ The /authorize endpoint receives GET requests with the following query parameter
 
 Redirects to the /login endpoint with the following query parameters.
 
-| parameter    | required | description                          |
-|--------------|----------|--------------------------------------|
-| redirect_uri | true     | Redirect URI to the consent endpoint |
+| parameter | required | description                          |
+|-----------|----------|--------------------------------------|
+| done      | true     | Redirect URI to the consent endpoint |
 
 
 ### /login (GET)
@@ -51,9 +51,9 @@ The /authorize endpoint receives GET requests with the following query parameter
 
 The query parameters are:
 
-| parameter    | required | description                          |
-|--------------|----------|--------------------------------------|
-| redirect_uri | true     | Redirect URI to the consent endpoint |
+| parameter | required | description                          |
+|-----------|----------|--------------------------------------|
+| done      | true     | Redirect URI to the consent endpoint |
 
 The request body contains:
 
@@ -65,11 +65,15 @@ The request body contains:
 #### Flow
 
 1. Verify user exists and the password is valid
-2. Redirect to `redirect_uri`
+2. Redirect to `done`
 
 #### Output
 
 Assigns a login cookie and redirects to the URI in the input query parameters.
+
+#### Error Response
+
+Returns a json-formatted error response with Http Status 400 if one or more query parameters are invalid.
 
 ### /consent (GET)
 

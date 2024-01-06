@@ -25,6 +25,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // arrow-kt
+    implementation("io.arrow-kt:arrow-core:1.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+
     // Generate openapi.yaml
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
