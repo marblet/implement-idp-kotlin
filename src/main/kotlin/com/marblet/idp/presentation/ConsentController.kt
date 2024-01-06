@@ -1,5 +1,6 @@
 package com.marblet.idp.presentation
 
+import com.marblet.idp.config.EndpointPath
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/consent")
+@RequestMapping(EndpointPath.CONSENT_PATH)
 class ConsentController {
     @GetMapping
     fun getConsentScreen(
