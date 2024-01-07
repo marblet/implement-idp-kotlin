@@ -1,4 +1,4 @@
-package com.marblet.idp.infrastructure
+package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.model.Client
 import com.marblet.idp.domain.model.ClientId

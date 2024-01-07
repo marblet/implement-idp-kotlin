@@ -1,4 +1,4 @@
-package com.marblet.idp.infrastructure
+package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.repository.UserRepository
 import org.jetbrains.exposed.sql.Table
