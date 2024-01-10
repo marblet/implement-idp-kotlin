@@ -23,3 +23,5 @@ jobs:
         run: chmod +x ./gradlew
       - name: run linter
         run: ./gradlew ktlintCheck
+      - name: run unittest
+        run: ./gradlew test
