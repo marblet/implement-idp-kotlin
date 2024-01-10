@@ -40,6 +40,9 @@ dependencies {
     // password hashing
     implementation("org.springframework.security:spring-security-crypto:6.0.3")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
+
+    // thymeleaf
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
 
 tasks.withType<KotlinCompile> {
