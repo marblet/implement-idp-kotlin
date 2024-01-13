@@ -1,3 +1,7 @@
 package com.marblet.idp.domain.repository
 
-interface UserRepository
+import com.marblet.idp.domain.model.User
+
+interface UserRepository {
+    fun findByUsername(username: String): User?
+}
