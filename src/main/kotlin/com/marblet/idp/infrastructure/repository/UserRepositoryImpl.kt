@@ -11,6 +11,18 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 @Transactional
 class UserRepositoryImpl : UserRepository {
+    override fun get(id: String): User? {
+        return Users.select {
+            Users.id eq id
+        }.firstOrNull()?.let {
+            User(
+                id = it[Users.id],
+                username = it[Users.username],
+                password = HashedPassword(it[Users.password]),
+            )
+        }
+    }
+
     override fun findByUsername(username: String): User? {
         return Users.select {
             Users.username eq username

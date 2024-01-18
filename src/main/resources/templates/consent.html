@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>login</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<table>
+    <tr>
+        <td>Client Name</td>
+        <td><p th:text="${clientName}" /></td>
+    </tr>
+    <tr>
+        <td>Scope</td>
+        <td><p th:text="${scope}" /></td>
+    </tr>
+</table>
+<form action="/consent" method="post">
+    <button>Grant</button>
+</form>
+</body>
+</html>
