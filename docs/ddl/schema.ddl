@@ -4,6 +4,7 @@ CREATE TABLE clients (
     id VARCHAR(128),
     secret VARCHAR(128),
     redirect_uris TEXT NOT NULL,
+    name VARCHAR(128) NOT NULL,
     created_at DATETIME default current_timestamp,
     updated_at DATETIME default current_timestamp ON UPDATE current_timestamp,
     PRIMARY KEY (id)

@@ -18,7 +18,9 @@ class ClientRepositoryImpl : ClientRepository {
             Client(
                 clientId = ClientId(it[Clients.id]),
                 secret = it[Clients.secret],
-                redirectUris = it[Clients.redirectUris].split(" "),
+                redirectUris = it[Clients.redirectUris].split(" ").toSet(),
+                name = it[Clients.name],
+                scopes = it[Clients.scopes].split(" ").toSet(),
             )
         }
     }
@@ -26,8 +28,10 @@ class ClientRepositoryImpl : ClientRepository {
 
 object Clients : Table("clients") {
     val id = varchar("id", 128)
-    val secret = varchar("secret", 128)
+    val secret = varchar("secret", 128).nullable()
     val redirectUris = text("redirect_uris")
+    val name = varchar("name", 128)
+    val scopes = text("scopes")
 
     override val primaryKey = PrimaryKey(id)
 }

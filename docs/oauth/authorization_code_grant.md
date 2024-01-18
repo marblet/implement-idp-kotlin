@@ -79,6 +79,11 @@ Returns a json-formatted error response with Http Status 400 if one or more quer
 
 `GET /consent` returns the consent screen.
 
+#### Flow
+
+1. Verify whether the user have logged in. If not, redirect to the login page.
+2. Show consent page.
+
 ### /consent (POST)
 
 `POST /consent` is called if the user grants the client to access the user's resources.
