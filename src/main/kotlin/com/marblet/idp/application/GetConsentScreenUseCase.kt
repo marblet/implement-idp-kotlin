@@ -7,12 +7,10 @@ import com.marblet.idp.domain.model.AuthorizationError
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.repository.ClientRepository
-import com.marblet.idp.domain.repository.UserRepository
 import org.springframework.stereotype.Service
 
 @Service
 class GetConsentScreenUseCase(
-    private val userRepository: UserRepository,
     private val clientRepository: ClientRepository,
 ) {
     fun run(

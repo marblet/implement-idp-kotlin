@@ -2,6 +2,7 @@ package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.model.HashedPassword
 import com.marblet.idp.domain.model.User
+import com.marblet.idp.domain.model.UserId
 import com.marblet.idp.domain.repository.UserRepository
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.select
@@ -16,7 +17,7 @@ class UserRepositoryImpl : UserRepository {
             Users.id eq id
         }.firstOrNull()?.let {
             User(
-                id = it[Users.id],
+                id = UserId(it[Users.id]),
                 username = it[Users.username],
                 password = HashedPassword(it[Users.password]),
             )
@@ -28,7 +29,7 @@ class UserRepositoryImpl : UserRepository {
             Users.username eq username
         }.firstOrNull()?.let {
             User(
-                id = it[Users.id],
+                id = UserId(it[Users.id]),
                 username = it[Users.username],
                 password = HashedPassword(it[Users.password]),
             )

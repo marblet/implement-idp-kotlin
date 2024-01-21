@@ -117,5 +117,5 @@ Adds code and state as query parameters to `redirect_uri`, and redirects to it.
 
 | parameter | required                                                 | description |
 |-----------|----------------------------------------------------------|-------------|
-| code      | true                                                     |             |
+| code      | true                                                     | length = 32 |
 | state     | true if the "state" parameter was present in the request |             |
