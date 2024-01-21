@@ -19,7 +19,7 @@ class AuthenticateUseCase(
         if (!user.validate(unauthenticatedUser, hashingService)) {
             return Error.UserNotExist.left()
         }
-        return Response(mapOf("login" to user.id)).right()
+        return Response(mapOf("login" to user.id.value)).right()
     }
 
     sealed class Error(val error: AuthorizationError, val description: String) {

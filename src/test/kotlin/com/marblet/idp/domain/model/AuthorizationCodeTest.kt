@@ -1,0 +1,43 @@
+package com.marblet.idp.domain.model
+
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
+
+class AuthorizationCodeTest {
+    @Test
+    fun generatedCodeLengthIs32() {
+        val userId = UserId("user-1")
+        val clientId = ClientId("client-1")
+        val scopes = setOf("a", "b")
+
+        val actual = AuthorizationCode.generate(userId, clientId, scopes)
+
+        assertThat(actual.code.length).isEqualTo(32)
+    }
+
+    @Test
+    fun generatedCodeIsAlphanumeric() {
+        val userId = UserId("user-1")
+        val clientId = ClientId("client-1")
+        val scopes = setOf("a", "b")
+
+        val actual = AuthorizationCode.generate(userId, clientId, scopes)
+
+        assertThat(actual.code).matches("^[0-9a-zA-Z]+$")
+    }
+
+    @Test
+    fun generatedCodeExpirationIsWithin10Minutes() {
+        val userId = UserId("user-1")
+        val clientId = ClientId("client-1")
+        val scopes = setOf("a", "b")
+
+        val actual = AuthorizationCode.generate(userId, clientId, scopes)
+
+        val currentTime = LocalDateTime.now()
+        val expirationThreshold = LocalDateTime.now().plusMinutes(10)
+        assertThat(actual.expiration).isAfter(currentTime)
+        assertThat(actual.expiration).isBefore(expirationThreshold)
+    }
+}

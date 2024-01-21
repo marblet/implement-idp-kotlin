@@ -12,11 +12,16 @@
     </tr>
     <tr>
         <td>Scope</td>
-        <td><p th:text="${scope}" /></td>
+        <td><p th:text="${displayScope}" /></td>
     </tr>
 </table>
 <form action="/consent" method="post">
     <button>Grant</button>
+    <input type="hidden" id="client_id" name="client_id" th:value="${clientId}" />
+    <input type="hidden" id="response_type" name="response_type" th:value="${responseType}" />
+    <input type="hidden" id="redirect_uri" name="redirect_uri" th:value="${redirectUri}" />
+    <input th:if="${scope != null}" type="hidden" id="scope" name="scope" th:value="${scope}" />
+    <input th:if="${state != null}" type="hidden" id="state" name="state" th:value="${state}" />
 </form>
 </body>
 </html>
