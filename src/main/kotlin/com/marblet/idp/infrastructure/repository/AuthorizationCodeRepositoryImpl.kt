@@ -17,6 +17,7 @@ class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
             it[userId] = authorizationCode.userId.value
             it[clientId] = authorizationCode.clientId.value
             it[scope] = authorizationCode.scopes.joinToString(separator = " ")
+            it[redirectUri] = authorizationCode.redirectUri.value
             it[expiration] = authorizationCode.expiration
         }
     }
@@ -27,6 +28,7 @@ object AuthorizationCodes : Table("authorization_codes") {
     val userId = varchar("user_id", 128) references Users.id
     val clientId = varchar("client_id", 128) references Clients.id
     val scope = text("scope")
+    val redirectUri = text("redirect_uri")
     val expiration = datetime("expiration")
 
     override val primaryKey = PrimaryKey(code)
