@@ -53,7 +53,7 @@ class GrantUseCase(
             return Error.ResponseTypeInvalid.left()
         }
 
-        val authorizationCode = AuthorizationCode.generate(user.id, clientId, requestedScope)
+        val authorizationCode = AuthorizationCode.generate(user.id, clientId, requestedScope, redirectUri)
         authorizationCodeRepository.insert(authorizationCode)
         return Response(redirectUri, authorizationCode.code, state).right()
     }
