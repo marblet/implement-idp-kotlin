@@ -30,4 +30,8 @@ class AuthorizationCode(
             return AuthorizationCode(code, userId, clientId, scopes, redirectUri, expiration)
         }
     }
+
+    fun isExpired(): Boolean {
+        return expiration.isBefore(LocalDateTime.now())
+    }
 }

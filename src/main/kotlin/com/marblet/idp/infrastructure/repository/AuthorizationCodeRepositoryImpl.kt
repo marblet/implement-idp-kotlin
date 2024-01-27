@@ -1,16 +1,37 @@
 package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.model.AuthorizationCode
+import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.RedirectUri
+import com.marblet.idp.domain.model.UserId
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.select
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @Repository
 class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
+    override fun get(code: String): AuthorizationCode? {
+        return AuthorizationCodes.select {
+            AuthorizationCodes.code eq code
+        }.firstOrNull()?.let {
+            AuthorizationCode(
+                code = it[AuthorizationCodes.code],
+                userId = UserId(it[AuthorizationCodes.userId]),
+                clientId = ClientId(it[AuthorizationCodes.clientId]),
+                scopes = it[AuthorizationCodes.scope].split(" ").toSet(),
+                redirectUri = RedirectUri(it[AuthorizationCodes.redirectUri]),
+                expiration = it[AuthorizationCodes.expiration],
+            )
+        }
+    }
+
     override fun insert(authorizationCode: AuthorizationCode) {
         AuthorizationCodes.insert {
             it[code] = authorizationCode.code
@@ -19,6 +40,12 @@ class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
             it[scope] = authorizationCode.scopes.joinToString(separator = " ")
             it[redirectUri] = authorizationCode.redirectUri.value
             it[expiration] = authorizationCode.expiration
+        }
+    }
+
+    override fun delete(authorizationCode: AuthorizationCode) {
+        AuthorizationCodes.deleteWhere {
+            code eq authorizationCode.code
         }
     }
 }

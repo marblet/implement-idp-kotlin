@@ -5,5 +5,6 @@ class EndpointPath {
         const val AUTHORIZE_PATH = "authorize"
         const val LOGIN_PATH = "login"
         const val CONSENT_PATH = "consent"
+        const val TOKEN_PATH = "token"
     }
 }

@@ -43,6 +43,12 @@ dependencies {
 
     // thymeleaf
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+    // JWT
+    implementation("com.auth0:java-jwt:4.4.0")
+
+    // test
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }
 
 tasks.withType<KotlinCompile> {
