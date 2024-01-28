@@ -25,5 +25,22 @@ data class AccessTokenPayload(
                 issuedAt.plusSeconds(EXPIRATION_SEC),
             )
         }
+
+        fun generate(
+            refreshTokenPayload: RefreshTokenPayload,
+            scopes: Set<String>?,
+        ): AccessTokenPayload? {
+            if (refreshTokenPayload.isExpired()) {
+                return null
+            }
+            val issuedAt = LocalDateTime.now()
+            return AccessTokenPayload(
+                refreshTokenPayload.userId,
+                refreshTokenPayload.clientId,
+                scopes ?: refreshTokenPayload.scopes,
+                issuedAt,
+                issuedAt.plusSeconds(EXPIRATION_SEC),
+            )
+        }
     }
 }
