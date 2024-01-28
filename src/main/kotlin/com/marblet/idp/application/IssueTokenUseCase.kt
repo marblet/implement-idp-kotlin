@@ -87,7 +87,7 @@ class IssueTokenUseCase(
 
         data object AuthCodeExpired : Error(TokenError.INVALID_GRANT, "authorization code has expired")
 
-        data object InvalidGrantType : Error(TokenError.INVALID_REQUEST, "grant_type is invalid")
+        data object InvalidGrantType : Error(TokenError.UNSUPPORTED_GRANT_TYPE, "grant_type is invalid")
     }
 
     data class Response(
