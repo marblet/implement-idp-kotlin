@@ -21,9 +21,8 @@ class IssueTokenUseCase(
 ) {
     fun run(
         authorizationHeader: String?,
-        grantType: String,
-        code: String,
-        redirectUri: String,
+        code: String?,
+        redirectUri: String?,
         clientId: String?,
     ): Either<Error, Response> {
         // Client Authentication
@@ -43,9 +42,12 @@ class IssueTokenUseCase(
             return Error.InvalidClient.left()
         }
 
-        // verify request parameters
-        if (grantType != "authorization_code") {
-            return Error.InvalidGrantType.left()
+        // verify request params
+        if (code == null) {
+            return Error.CodeEmpty.left()
+        }
+        if (redirectUri == null) {
+            return Error.RedirectUriEmpty.left()
         }
 
         // issue access token
@@ -75,13 +77,17 @@ class IssueTokenUseCase(
     sealed class Error(val error: TokenError, val description: String) {
         data object InvalidClient : Error(TokenError.INVALID_CLIENT, "invalid client")
 
-        data object InvalidGrantType : Error(TokenError.UNSUPPORTED_GRANT_TYPE, "grant_type must be authorization_code")
+        data object CodeEmpty : Error(TokenError.INVALID_REQUEST, "code is required")
+
+        data object RedirectUriEmpty : Error(TokenError.INVALID_REQUEST, "redirect_uri is required")
 
         data object InvalidRedirectUri : Error(TokenError.INVALID_REQUEST, "requested redirect_uri is not allowed")
 
         data object InvalidAuthorizationCode : Error(TokenError.INVALID_GRANT, "invalid authorization code")
 
         data object AuthCodeExpired : Error(TokenError.INVALID_GRANT, "authorization code has expired")
+
+        data object InvalidGrantType : Error(TokenError.INVALID_REQUEST, "grant_type is invalid")
     }
 
     data class Response(

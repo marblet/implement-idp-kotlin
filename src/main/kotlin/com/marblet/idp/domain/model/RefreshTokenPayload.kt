@@ -26,4 +26,8 @@ data class RefreshTokenPayload(
             )
         }
     }
+
+    fun isExpired(): Boolean {
+        return expiration.isBefore(LocalDateTime.now())
+    }
 }
