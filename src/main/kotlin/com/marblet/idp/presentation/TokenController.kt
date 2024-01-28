@@ -1,5 +1,6 @@
 package com.marblet.idp.presentation
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.marblet.idp.application.IssueTokenUseCase
 import com.marblet.idp.config.EndpointPath
@@ -33,6 +34,7 @@ class TokenController(private val issueTokenUseCase: IssueTokenUseCase) {
                     accessToken = it.accessToken,
                     tokenType = it.tokenType,
                     expiresIn = it.expiresIn,
+                    refreshToken = it.refreshToken,
                 )
             },
         )
@@ -45,10 +47,12 @@ class TokenController(private val issueTokenUseCase: IssueTokenUseCase) {
         @JsonProperty("client_id") val clientId: String?,
     )
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     data class IssueTokenResponseBody(
         @JsonProperty("access_token") val accessToken: String,
         @JsonProperty("token_type") val tokenType: String,
         @JsonProperty("expires_in") val expiresIn: Long,
+        @JsonProperty("refresh_token") val refreshToken: String?,
     )
 
     data class IssueTokenException(val error: IssueTokenUseCase.Error) : Exception()

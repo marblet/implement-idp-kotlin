@@ -5,6 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.RefreshTokenPayload
 import com.marblet.idp.domain.model.TokenError
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import com.marblet.idp.domain.repository.ClientRepository
@@ -16,6 +17,7 @@ class IssueTokenUseCase(
     private val clientRepository: ClientRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val accessTokenConverter: AccessTokenConverter,
+    private val refreshTokenConverter: RefreshTokenConverter,
 ) {
     fun run(
         authorizationHeader: String?,
@@ -46,15 +48,28 @@ class IssueTokenUseCase(
             return Error.InvalidGrantType.left()
         }
 
+        // issue access token
         val authorizationCode = authorizationCodeRepository.get(code) ?: return Error.InvalidAuthorizationCode.left()
         if (authorizationCode.redirectUri.value != redirectUri) {
             return Error.InvalidRedirectUri.left()
         }
-        val payload = AccessTokenPayload.generate(authorizationCode) ?: return Error.AuthCodeExpired.left()
-        val accessToken = accessTokenConverter.encode(payload)
+        val accessTokenPayload = AccessTokenPayload.generate(authorizationCode) ?: return Error.AuthCodeExpired.left()
+        val accessToken = accessTokenConverter.encode(accessTokenPayload)
         authorizationCodeRepository.delete(authorizationCode)
-        // TODO issue refresh token
-        return Response(accessToken, "bearer", AccessTokenPayload.EXPIRATION_SEC).right()
+
+        // issue refresh token
+        val refreshToken =
+            if (client.isConfidentialClient()) {
+                RefreshTokenPayload.generate(authorizationCode)?.let { refreshTokenConverter.encode(it) }
+            } else {
+                null
+            }
+        return Response(
+            accessToken = accessToken,
+            tokenType = "bearer",
+            expiresIn = AccessTokenPayload.EXPIRATION_SEC,
+            refreshToken = refreshToken,
+        ).right()
     }
 
     sealed class Error(val error: TokenError, val description: String) {
@@ -73,5 +88,6 @@ class IssueTokenUseCase(
         val accessToken: String,
         val tokenType: String,
         val expiresIn: Long,
+        val refreshToken: String?,
     )
 }
