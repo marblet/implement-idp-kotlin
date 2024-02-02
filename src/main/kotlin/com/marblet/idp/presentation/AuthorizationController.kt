@@ -1,6 +1,7 @@
 package com.marblet.idp.presentation
 
 import com.marblet.idp.application.GetAuthorizeUseCase
+import com.marblet.idp.application.error.AuthorizationApplicationError
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.presentation.dto.ErrorResponse
@@ -37,19 +38,13 @@ class AuthorizationController(
         )
     }
 
-    data class GetAuthorizeException(val error: GetAuthorizeUseCase.Error, val state: String?) : Exception()
+    data class GetAuthorizeException(val error: AuthorizationApplicationError, val state: String?) : Exception()
 
     @ExceptionHandler(value = [GetAuthorizeException::class])
     fun handleGetAuthorizeUseCaseException(exception: GetAuthorizeException): ResponseEntity<ErrorResponse> {
-        return when (val error = exception.error) {
-            is GetAuthorizeUseCase.Error.ClientNotExist ->
-                ResponseEntity.badRequest().body(
-                    ErrorResponse(error.error.error, error.description, exception.state),
-                )
-            is GetAuthorizeUseCase.Error.InvalidRedirectUri ->
-                ResponseEntity.badRequest().body(
-                    ErrorResponse(error.error.error, error.description, exception.state),
-                )
-        }
+        val error = exception.error
+        return ResponseEntity.badRequest().body(
+            ErrorResponse(error.error.error, error.description, exception.state),
+        )
     }
 }
