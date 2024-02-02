@@ -2,6 +2,7 @@ package com.marblet.idp.presentation
 
 import com.marblet.idp.application.GetConsentScreenUseCase
 import com.marblet.idp.application.GrantUseCase
+import com.marblet.idp.application.error.AuthorizationApplicationError
 import com.marblet.idp.config.EndpointPath
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
@@ -54,7 +55,7 @@ class ConsentController(
         )
     }
 
-    data class GetConsentScreenException(val error: GetConsentScreenUseCase.Error, val state: String?) : Exception()
+    data class GetConsentScreenException(val error: AuthorizationApplicationError, val state: String?) : Exception()
 
     @ExceptionHandler(value = [GetConsentScreenException::class])
     fun handleGetConsentScreenException(exception: GetConsentScreenException): ResponseEntity<ErrorResponse> {
@@ -84,7 +85,7 @@ class ConsentController(
         )
     }
 
-    data class GrantException(val error: GrantUseCase.Error, val state: String?) : Exception()
+    data class GrantException(val error: AuthorizationApplicationError, val state: String?) : Exception()
 
     @ExceptionHandler(value = [GrantException::class])
     fun handleGrantException(exception: GrantException): ResponseEntity<ErrorResponse> {

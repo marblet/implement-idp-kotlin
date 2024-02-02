@@ -3,8 +3,11 @@ package com.marblet.idp.application
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import com.marblet.idp.application.error.AuthorizationApplicationError
+import com.marblet.idp.application.error.AuthorizationApplicationError.ClientNotExist
+import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotAuthenticated
+import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotFound
 import com.marblet.idp.domain.model.AuthorizationCode
-import com.marblet.idp.domain.model.AuthorizationError
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
@@ -16,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder
 @Service
 class GrantUseCase(
     private val clientRepository: ClientRepository,
+    private val authorizationRequestValidator: AuthorizationRequestValidator,
     private val userRepository: UserRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
 ) {
@@ -26,15 +30,18 @@ class GrantUseCase(
         scope: String?,
         state: String?,
         loginCookie: String?,
-    ): Either<Error, Response> {
+    ): Either<AuthorizationApplicationError, Response> {
         // verify client
-        val client = clientRepository.get(clientId) ?: return Error.ClientNotExist.left()
+        authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope)
+            .onLeft { return it.left() }
+
+        val client = clientRepository.get(clientId) ?: return ClientNotExist.left()
 
         // verify user
         if (loginCookie == null) {
-            return Error.UserNotAuthenticated.left()
+            return UserNotAuthenticated.left()
         }
-        val user = userRepository.get(loginCookie) ?: return Error.UserNotFound.left()
+        val user = userRepository.get(loginCookie) ?: return UserNotFound.left()
 
         // verify request
         val requestedScope =
@@ -43,33 +50,10 @@ class GrantUseCase(
             } else {
                 client.scopes
             }
-        if (!client.scopes.containsAll(requestedScope)) {
-            return Error.ScopeInvalid.left()
-        }
-        if (!client.redirectUris.contains(redirectUri.value)) {
-            return Error.RedirectUriInvalid.left()
-        }
-        if (responseType != "code") {
-            return Error.ResponseTypeInvalid.left()
-        }
 
         val authorizationCode = AuthorizationCode.generate(user.id, clientId, requestedScope, redirectUri)
         authorizationCodeRepository.insert(authorizationCode)
         return Response(redirectUri, authorizationCode.code, state).right()
-    }
-
-    sealed class Error(val error: AuthorizationError, val description: String) {
-        data object UserNotAuthenticated : Error(AuthorizationError.INVALID_REQUEST, "user not logged in.")
-
-        data object UserNotFound : Error(AuthorizationError.INVALID_REQUEST, "user not found.")
-
-        data object ClientNotExist : Error(AuthorizationError.INVALID_REQUEST, "client_id is invalid.")
-
-        data object ScopeInvalid : Error(AuthorizationError.INVALID_SCOPE, "scope is invalid.")
-
-        data object RedirectUriInvalid : Error(AuthorizationError.INVALID_REQUEST, "redirect_uri is invalid.")
-
-        data object ResponseTypeInvalid : Error(AuthorizationError.UNSUPPORTED_RESPONSE_TYPE, "response_type is invalid.")
     }
 
     class Response(redirectUri: RedirectUri, code: String, state: String?) {

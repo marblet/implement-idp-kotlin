@@ -3,7 +3,9 @@ package com.marblet.idp.application
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.marblet.idp.domain.model.AuthorizationError
+import com.marblet.idp.application.error.AuthorizationApplicationError
+import com.marblet.idp.application.error.AuthorizationApplicationError.ClientNotExist
+import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotAuthenticated
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.repository.ClientRepository
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class GetConsentScreenUseCase(
+    private val authorizationRequestValidator: AuthorizationRequestValidator,
     private val clientRepository: ClientRepository,
 ) {
     fun run(
@@ -20,19 +23,15 @@ class GetConsentScreenUseCase(
         scope: String?,
         state: String?,
         loginCookie: String?,
-    ): Either<Error, Response> {
+    ): Either<AuthorizationApplicationError, Response> {
         if (loginCookie == null) {
-            return Error.UserNotAuthenticated.left()
+            return UserNotAuthenticated.left()
         }
-        val client = clientRepository.get(clientId) ?: return Error.ClientNotExist.left()
+        authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope)
+            .onLeft { return it.left() }
+        val client = clientRepository.get(clientId) ?: return ClientNotExist.left()
         val requiredScope = scope ?: client.scopes.joinToString()
         return Response(client.name, requiredScope).right()
-    }
-
-    sealed class Error(val error: AuthorizationError, val description: String) {
-        data object UserNotAuthenticated : Error(AuthorizationError.INVALID_REQUEST, "user not logged in.")
-
-        data object ClientNotExist : Error(AuthorizationError.INVALID_REQUEST, "client_id is invalid.")
     }
 
     data class Response(val clientName: String, val scope: String)
