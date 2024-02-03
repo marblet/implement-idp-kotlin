@@ -9,7 +9,10 @@ import com.marblet.idp.application.error.AuthorizationApplicationError.RedirectU
 import com.marblet.idp.application.error.AuthorizationApplicationError.ResponseTypeInvalid
 import com.marblet.idp.application.error.AuthorizationApplicationError.ScopeInvalid
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.OauthAuthorizationRequest
 import com.marblet.idp.domain.model.RedirectUri
+import com.marblet.idp.domain.model.ResponseType.CODE
+import com.marblet.idp.domain.model.ValidatedAuthorizationRequest
 import com.marblet.idp.domain.repository.ClientRepository
 import org.springframework.stereotype.Service
 
@@ -22,7 +25,7 @@ class AuthorizationRequestValidator(
         responseType: String,
         redirectUri: RedirectUri,
         scope: String?,
-    ): Either<AuthorizationApplicationError, Unit> {
+    ): Either<AuthorizationApplicationError, ValidatedAuthorizationRequest> {
         val client = clientRepository.get(clientId) ?: return ClientNotExist.left()
         if (responseType != "code") {
             return ResponseTypeInvalid.left()
@@ -30,15 +33,19 @@ class AuthorizationRequestValidator(
         if (!client.redirectUris.contains(redirectUri.value)) {
             return RedirectUriInvalid.left()
         }
-        val requestedScope =
+        val requestScope =
             if (scope?.isNotBlank() == true) {
                 scope.split(" ").toSet()
             } else {
                 client.scopes
             }
-        if (!client.scopes.containsAll(requestedScope)) {
+        if (!client.scopes.containsAll(requestScope)) {
             return ScopeInvalid.left()
         }
-        return Unit.right()
+        return OauthAuthorizationRequest(
+            client = client,
+            responseType = CODE,
+            requestScope = requestScope,
+        ).right()
     }
 }
