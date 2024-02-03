@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.marblet.idp.application.IssueTokenUseCase
 import com.marblet.idp.application.RefreshAccessTokenUseCase
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.GrantType
 import com.marblet.idp.presentation.dto.ErrorResponse
 import org.springframework.http.ResponseEntity

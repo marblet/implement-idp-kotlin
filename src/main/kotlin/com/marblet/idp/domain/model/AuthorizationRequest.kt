@@ -7,3 +7,9 @@ class OauthAuthorizationRequest(
     responseType: ResponseType,
     requestScopes: RequestScopes,
 ) : ValidatedAuthorizationRequest(client, responseType, requestScopes)
+
+class OidcAuthorizationRequest(
+    client: Client,
+    responseType: ResponseType,
+    requestScopes: RequestScopes,
+) : ValidatedAuthorizationRequest(client, responseType, requestScopes)

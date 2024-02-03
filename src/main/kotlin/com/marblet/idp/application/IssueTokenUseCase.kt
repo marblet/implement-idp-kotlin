@@ -18,6 +18,7 @@ class IssueTokenUseCase(
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val accessTokenConverter: AccessTokenConverter,
     private val refreshTokenConverter: RefreshTokenConverter,
+    private val idTokenGenerator: IdTokenGenerator,
 ) {
     fun run(
         authorizationHeader: String?,
@@ -57,7 +58,6 @@ class IssueTokenUseCase(
         }
         val accessTokenPayload = AccessTokenPayload.generate(authorizationCode) ?: return Error.AuthCodeExpired.left()
         val accessToken = accessTokenConverter.encode(accessTokenPayload)
-        authorizationCodeRepository.delete(authorizationCode)
 
         // issue refresh token
         val refreshToken =
@@ -66,11 +66,18 @@ class IssueTokenUseCase(
             } else {
                 null
             }
+
+        // issue IDToken
+        val idToken = idTokenGenerator.generate(authorizationCode)
+
+        authorizationCodeRepository.delete(authorizationCode)
+
         return Response(
             accessToken = accessToken,
             tokenType = "bearer",
             expiresIn = AccessTokenPayload.EXPIRATION_SEC,
             refreshToken = refreshToken,
+            idToken = idToken,
         ).right()
     }
 
@@ -95,5 +102,6 @@ class IssueTokenUseCase(
         val tokenType: String,
         val expiresIn: Long,
         val refreshToken: String?,
+        val idToken: String?,
     )
 }

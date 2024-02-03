@@ -1,4 +1,4 @@
-package com.marblet.idp.config
+package com.marblet.idp.configration
 
 class EndpointPath {
     companion object {

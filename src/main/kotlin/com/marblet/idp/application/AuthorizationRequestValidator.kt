@@ -10,6 +10,7 @@ import com.marblet.idp.application.error.AuthorizationApplicationError.ResponseT
 import com.marblet.idp.application.error.AuthorizationApplicationError.ScopeInvalid
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.OauthAuthorizationRequest
+import com.marblet.idp.domain.model.OidcAuthorizationRequest
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.ResponseType.CODE
@@ -35,10 +36,18 @@ class AuthorizationRequestValidator(
             return RedirectUriInvalid.left()
         }
         val requestScopes = RequestScopes.generate(scope, client.scopes) ?: return ScopeInvalid.left()
-        return OauthAuthorizationRequest(
-            client = client,
-            responseType = CODE,
-            requestScopes = requestScopes,
-        ).right()
+        return if (requestScopes.hasOpenidScope()) {
+            OidcAuthorizationRequest(
+                client = client,
+                responseType = CODE,
+                requestScopes = requestScopes,
+            ).right()
+        } else {
+            OauthAuthorizationRequest(
+                client = client,
+                responseType = CODE,
+                requestScopes = requestScopes,
+            ).right()
+        }
     }
 }

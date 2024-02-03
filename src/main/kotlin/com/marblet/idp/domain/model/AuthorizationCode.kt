@@ -43,5 +43,14 @@ data class AuthorizationCodeScopes(private val value: Set<String>) {
 
     fun toSpaceSeparatedString() = value.joinToString(" ")
 
-    fun toTokenScopes() = TokenScopes(value)
+    fun toTokenScopes(): TokenScopes? {
+        // remove UserInfo scopes and openid scope
+        val scopes = value - (UserInfoScope.entries.map { it.value }.toSet() + OpenidScope.entries.map { it.value }.toSet())
+        if (scopes.isEmpty()) {
+            return null
+        }
+        return TokenScopes(scopes)
+    }
+
+    fun hasOpenidScope() = value.contains(OpenidScope.OPENID.value)
 }

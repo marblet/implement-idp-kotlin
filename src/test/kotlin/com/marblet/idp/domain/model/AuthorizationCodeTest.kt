@@ -61,4 +61,40 @@ class AuthorizationCodeScopesTest {
 
         assertThat(actual).isEqualTo("a b c")
     }
+
+    @Test
+    fun returnTrueIfScopesHasOpenidScope() {
+        val target = AuthorizationCodeScopes(setOf("openid", "email"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isTrue()
+    }
+
+    @Test
+    fun returnFalseIfNoOpenidScope() {
+        val target = AuthorizationCodeScopes(setOf("a", "b"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isFalse()
+    }
+
+    @Test
+    fun returnTokenScopeIfAccessTokenScopesExist() {
+        val target = AuthorizationCodeScopes(setOf("openid", "email", "a", "b"))
+
+        val actual = target.toTokenScopes()
+
+        assertThat(actual).isEqualTo(TokenScopes(setOf("a", "b")))
+    }
+
+    @Test
+    fun returnNullIfAccessTokenScopesNotExist() {
+        val target = AuthorizationCodeScopes(setOf("openid", "phone"))
+
+        val actual = target.toTokenScopes()
+
+        assertThat(actual).isNull()
+    }
 }

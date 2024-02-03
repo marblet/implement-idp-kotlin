@@ -1,6 +1,6 @@
 package com.marblet.idp.application
 
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
