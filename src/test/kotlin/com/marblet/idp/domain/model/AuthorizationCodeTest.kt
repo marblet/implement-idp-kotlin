@@ -44,3 +44,21 @@ class AuthorizationCodeTest {
         assertThat(actual.expiration).isBefore(expirationThreshold)
     }
 }
+
+class AuthorizationCodeScopesTest {
+    @Test
+    fun canGenerateFromSpaceSeparatedString() {
+        val actual = AuthorizationCodeScopes.fromSpaceSeparatedString("a b c")
+
+        assertThat(actual).isEqualTo(AuthorizationCodeScopes(setOf("a", "b", "c")))
+    }
+
+    @Test
+    fun canGenerateSpaceSeparatedString() {
+        val target = AuthorizationCodeScopes(setOf("a", "b", "c"))
+
+        val actual = target.toSpaceSeparatedString()
+
+        assertThat(actual).isEqualTo("a b c")
+    }
+}

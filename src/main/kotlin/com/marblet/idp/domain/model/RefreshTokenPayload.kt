@@ -20,7 +20,7 @@ data class RefreshTokenPayload(
             return RefreshTokenPayload(
                 authorizationCode.userId,
                 authorizationCode.clientId,
-                TokenScopes(authorizationCode.scopes),
+                authorizationCode.scopes.toTokenScopes(),
                 issuedAt,
                 issuedAt.plusDays(EXPIRATION_DAYS),
             )

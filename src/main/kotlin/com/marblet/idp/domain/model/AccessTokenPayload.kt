@@ -20,7 +20,7 @@ data class AccessTokenPayload(
             return AccessTokenPayload(
                 authorizationCode.userId,
                 authorizationCode.clientId,
-                TokenScopes(authorizationCode.scopes),
+                authorizationCode.scopes.toTokenScopes(),
                 issuedAt,
                 issuedAt.plusSeconds(EXPIRATION_SEC),
             )
