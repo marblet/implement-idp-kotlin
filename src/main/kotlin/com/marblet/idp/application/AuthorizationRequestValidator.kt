@@ -37,9 +37,9 @@ class AuthorizationRequestValidator(
             if (scope?.isNotBlank() == true) {
                 scope.split(" ").toSet()
             } else {
-                client.scopes
+                client.scopes.value
             }
-        if (!client.scopes.containsAll(requestScope)) {
+        if (!client.scopes.value.containsAll(requestScope)) {
             return ScopeInvalid.left()
         }
         return OauthAuthorizationRequest(

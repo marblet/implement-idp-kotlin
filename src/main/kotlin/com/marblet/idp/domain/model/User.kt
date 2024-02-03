@@ -11,3 +11,5 @@ data class User(val id: UserId, val username: String, val password: HashedPasswo
             password.matches(unauthenticatedUser.password, hashingService)
     }
 }
+
+data class UserId(val value: String)
