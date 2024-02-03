@@ -19,7 +19,7 @@ class AuthorizationCode(
         fun generate(
             userId: UserId,
             clientId: ClientId,
-            scopes: Set<String>,
+            scopes: RequestScopes,
             redirectUri: RedirectUri,
         ): AuthorizationCode {
             val code =
@@ -27,7 +27,7 @@ class AuthorizationCode(
                     .map { Random.nextInt(0, charPool.size).let { charPool[it] } }
                     .joinToString("")
             val expiration = LocalDateTime.now().plusMinutes(EXPIRATION_MINUTES)
-            return AuthorizationCode(code, userId, clientId, AuthorizationCodeScopes(scopes), redirectUri, expiration)
+            return AuthorizationCode(code, userId, clientId, scopes.toAuthorizationCodeScopes(), redirectUri, expiration)
         }
     }
 
@@ -36,7 +36,7 @@ class AuthorizationCode(
     }
 }
 
-data class AuthorizationCodeScopes(val value: Set<String>) {
+data class AuthorizationCodeScopes(private val value: Set<String>) {
     companion object {
         fun fromSpaceSeparatedString(scope: String) = AuthorizationCodeScopes(scope.split(" ").toSet())
     }

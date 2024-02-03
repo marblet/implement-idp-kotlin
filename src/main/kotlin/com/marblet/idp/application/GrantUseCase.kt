@@ -39,7 +39,7 @@ class GrantUseCase(
         }
         val user = userRepository.get(loginCookie) ?: return UserNotFound.left()
 
-        val authorizationCode = AuthorizationCode.generate(user.id, clientId, request.requestScope, redirectUri)
+        val authorizationCode = AuthorizationCode.generate(user.id, clientId, request.requestScopes, redirectUri)
         authorizationCodeRepository.insert(authorizationCode)
         return Response(redirectUri, authorizationCode.code, state).right()
     }

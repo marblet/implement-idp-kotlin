@@ -11,6 +11,7 @@ import com.marblet.idp.application.error.AuthorizationApplicationError.ScopeInva
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.OauthAuthorizationRequest
 import com.marblet.idp.domain.model.RedirectUri
+import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.ResponseType.CODE
 import com.marblet.idp.domain.model.ValidatedAuthorizationRequest
 import com.marblet.idp.domain.repository.ClientRepository
@@ -33,19 +34,11 @@ class AuthorizationRequestValidator(
         if (!client.redirectUris.contains(redirectUri.value)) {
             return RedirectUriInvalid.left()
         }
-        val requestScope =
-            if (scope?.isNotBlank() == true) {
-                scope.split(" ").toSet()
-            } else {
-                client.scopes.value
-            }
-        if (!client.scopes.value.containsAll(requestScope)) {
-            return ScopeInvalid.left()
-        }
+        val requestScopes = RequestScopes.generate(scope, client.scopes) ?: return ScopeInvalid.left()
         return OauthAuthorizationRequest(
             client = client,
             responseType = CODE,
-            requestScope = requestScope,
+            requestScopes = requestScopes,
         ).right()
     }
 }

@@ -28,7 +28,7 @@ data class AccessTokenPayload(
 
         fun generate(
             refreshTokenPayload: RefreshTokenPayload,
-            scopes: Set<String>?,
+            scopes: RequestScopes,
         ): AccessTokenPayload? {
             if (refreshTokenPayload.isExpired()) {
                 return null
@@ -37,7 +37,7 @@ data class AccessTokenPayload(
             return AccessTokenPayload(
                 refreshTokenPayload.userId,
                 refreshTokenPayload.clientId,
-                scopes?.let { TokenScopes(it) } ?: refreshTokenPayload.scopes,
+                scopes.toTokenScopes(),
                 issuedAt,
                 issuedAt.plusSeconds(EXPIRATION_SEC),
             )
