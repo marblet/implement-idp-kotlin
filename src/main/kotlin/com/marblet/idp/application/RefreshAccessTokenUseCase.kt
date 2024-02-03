@@ -32,7 +32,7 @@ class RefreshAccessTokenUseCase(
             return Error.InvalidClient.left()
         }
         val scopes = scope?.split(" ")?.toSet()
-        if (scopes != null && !refreshTokenPayload.scopes.containsAll(scopes)) {
+        if (scopes != null && !refreshTokenPayload.scopes.value.containsAll(scopes)) {
             return Error.InvalidScope.left()
         }
 

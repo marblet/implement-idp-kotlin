@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class AccessTokenPayload(
     val userId: UserId,
     val clientId: ClientId,
-    val scopes: Set<String>,
+    val scopes: TokenScopes,
     val issuedAt: LocalDateTime,
     val expiration: LocalDateTime,
 ) {
@@ -20,7 +20,7 @@ data class AccessTokenPayload(
             return AccessTokenPayload(
                 authorizationCode.userId,
                 authorizationCode.clientId,
-                authorizationCode.scopes,
+                TokenScopes(authorizationCode.scopes),
                 issuedAt,
                 issuedAt.plusSeconds(EXPIRATION_SEC),
             )
@@ -37,7 +37,7 @@ data class AccessTokenPayload(
             return AccessTokenPayload(
                 refreshTokenPayload.userId,
                 refreshTokenPayload.clientId,
-                scopes ?: refreshTokenPayload.scopes,
+                scopes?.let { TokenScopes(it) } ?: refreshTokenPayload.scopes,
                 issuedAt,
                 issuedAt.plusSeconds(EXPIRATION_SEC),
             )
