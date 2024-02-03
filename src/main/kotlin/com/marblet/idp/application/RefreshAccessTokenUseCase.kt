@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.marblet.idp.domain.model.AccessTokenPayload
+import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.TokenError
 import org.springframework.stereotype.Service
 
@@ -31,14 +32,11 @@ class RefreshAccessTokenUseCase(
         if (authenticatedClient.clientId != refreshTokenPayload.clientId) {
             return Error.InvalidClient.left()
         }
-        val scopes = scope?.split(" ")?.toSet()
-        if (scopes != null && !refreshTokenPayload.scopes.containsAll(scopes)) {
-            return Error.InvalidScope.left()
-        }
+        val requestScopes = RequestScopes.generate(scope, refreshTokenPayload.scopes) ?: return Error.InvalidScope.left()
 
         // issue access token
         val accessToken =
-            AccessTokenPayload.generate(refreshTokenPayload, scopes)
+            AccessTokenPayload.generate(refreshTokenPayload, requestScopes)
                 ?.let { accessTokenConverter.encode(it) }
                 ?: return Error.RefreshTokenExpired.left()
         return Response(

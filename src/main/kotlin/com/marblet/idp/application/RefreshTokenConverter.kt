@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.exceptions.TokenExpiredException
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RefreshTokenPayload
+import com.marblet.idp.domain.model.TokenScopes
 import com.marblet.idp.domain.model.UserId
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -26,7 +27,7 @@ class RefreshTokenConverter {
             .withIssuedAt(Instant.ofEpochSecond(payload.issuedAt.atZone(ZoneId.systemDefault()).toEpochSecond()))
             .withExpiresAt(Instant.ofEpochSecond(payload.expiration.atZone(ZoneId.systemDefault()).toEpochSecond()))
             .withAudience(payload.clientId.value)
-            .withClaim(SCOPE_CLAIM_NAME, payload.scopes.joinToString(separator = " "))
+            .withClaim(SCOPE_CLAIM_NAME, payload.scopes.toSpaceSeparatedString())
             .sign(algorithm)
     }
 
@@ -37,7 +38,7 @@ class RefreshTokenConverter {
             return RefreshTokenPayload(
                 userId = UserId(decodedJWT.subject),
                 clientId = ClientId(decodedJWT.audience[0]),
-                scopes = decodedJWT.getClaim(SCOPE_CLAIM_NAME).asString().split(" ").toSet(),
+                scopes = TokenScopes.fromSpaceSeparatedString(decodedJWT.getClaim(SCOPE_CLAIM_NAME).asString()),
                 issuedAt = decodedJWT.issuedAtAsInstant.atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 expiration = decodedJWT.expiresAtAsInstant.atZone(ZoneId.systemDefault()).toLocalDateTime(),
             )

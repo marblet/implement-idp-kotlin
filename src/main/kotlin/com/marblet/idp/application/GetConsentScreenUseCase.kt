@@ -27,7 +27,7 @@ class GetConsentScreenUseCase(
         val request =
             authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope)
                 .fold({ return it.left() }, { it })
-        return Response(request.client.name, request.requestScope.joinToString()).right()
+        return Response(request.client.name, request.requestScopes.toSpaceSeparatedString()).right()
     }
 
     data class Response(val clientName: String, val scope: String)

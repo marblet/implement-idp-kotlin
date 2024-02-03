@@ -2,6 +2,7 @@ package com.marblet.idp.application
 
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RefreshTokenPayload
+import com.marblet.idp.domain.model.TokenScopes
 import com.marblet.idp.domain.model.UserId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ class RefreshTokenConverterTest {
             RefreshTokenPayload(
                 userId = UserId("user-id"),
                 clientId = ClientId("client-id"),
-                scopes = setOf("a", "b", "c"),
+                scopes = TokenScopes(setOf("a", "b", "c")),
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusDays(28L),
             )
@@ -36,7 +37,7 @@ class RefreshTokenConverterTest {
             RefreshTokenPayload(
                 userId = UserId("user-id"),
                 clientId = ClientId("client-id"),
-                scopes = setOf("a", "b", "c"),
+                scopes = TokenScopes(setOf("a", "b", "c")),
                 issuedAt = issuedAt,
                 expiration = expiration,
             )

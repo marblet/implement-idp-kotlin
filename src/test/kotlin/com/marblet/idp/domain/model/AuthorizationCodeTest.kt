@@ -9,7 +9,7 @@ class AuthorizationCodeTest {
     fun generatedCodeLengthIs32() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = setOf("a", "b")
+        val scopes = RequestScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)
@@ -21,7 +21,7 @@ class AuthorizationCodeTest {
     fun generatedCodeIsAlphanumeric() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = setOf("a", "b")
+        val scopes = RequestScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)
@@ -33,7 +33,7 @@ class AuthorizationCodeTest {
     fun generatedCodeExpirationIsWithin10Minutes() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = setOf("a", "b")
+        val scopes = RequestScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)
@@ -42,5 +42,23 @@ class AuthorizationCodeTest {
         val expirationThreshold = LocalDateTime.now().plusMinutes(10)
         assertThat(actual.expiration).isAfter(currentTime)
         assertThat(actual.expiration).isBefore(expirationThreshold)
+    }
+}
+
+class AuthorizationCodeScopesTest {
+    @Test
+    fun canGenerateFromSpaceSeparatedString() {
+        val actual = AuthorizationCodeScopes.fromSpaceSeparatedString("a b c")
+
+        assertThat(actual).isEqualTo(AuthorizationCodeScopes(setOf("a", "b", "c")))
+    }
+
+    @Test
+    fun canGenerateSpaceSeparatedString() {
+        val target = AuthorizationCodeScopes(setOf("a", "b", "c"))
+
+        val actual = target.toSpaceSeparatedString()
+
+        assertThat(actual).isEqualTo("a b c")
     }
 }

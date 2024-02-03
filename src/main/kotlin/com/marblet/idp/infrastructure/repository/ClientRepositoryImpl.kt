@@ -2,6 +2,7 @@ package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.model.Client
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.ClientScopes
 import com.marblet.idp.domain.repository.ClientRepository
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.select
@@ -20,7 +21,7 @@ class ClientRepositoryImpl : ClientRepository {
                 secret = it[Clients.secret],
                 redirectUris = it[Clients.redirectUris].split(" ").toSet(),
                 name = it[Clients.name],
-                scopes = it[Clients.scopes].split(" ").toSet(),
+                scopes = ClientScopes.fromSpaceSeparatedString(it[Clients.scopes]),
             )
         }
     }
