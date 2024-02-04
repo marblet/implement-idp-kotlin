@@ -1,6 +1,6 @@
 package com.marblet.idp.application
 
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import org.springframework.stereotype.Service

@@ -1,4 +1,4 @@
-package com.marblet.idp.config
+package com.marblet.idp.configration
 
 import org.jetbrains.exposed.spring.autoconfigure.ExposedAutoConfiguration
 import org.jetbrains.exposed.sql.DatabaseConfig

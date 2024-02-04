@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.marblet.idp.application.IssueTokenUseCase
 import com.marblet.idp.application.RefreshAccessTokenUseCase
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.GrantType
 import com.marblet.idp.presentation.dto.ErrorResponse
 import org.springframework.http.ResponseEntity
@@ -40,6 +40,7 @@ class TokenController(
                         tokenType = it.tokenType,
                         expiresIn = it.expiresIn,
                         refreshToken = it.refreshToken,
+                        idToken = it.idToken,
                     )
                 },
             )
@@ -74,10 +75,11 @@ class TokenController(
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class IssueTokenResponseBody(
-        @JsonProperty("access_token") val accessToken: String,
+        @JsonProperty("access_token") val accessToken: String?,
         @JsonProperty("token_type") val tokenType: String,
         @JsonProperty("expires_in") val expiresIn: Long,
         @JsonProperty("refresh_token") val refreshToken: String? = null,
+        @JsonProperty("id_token") val idToken: String? = null,
     )
 
     // TODO: combine IssueTokenException and RefreshAccessTokenException

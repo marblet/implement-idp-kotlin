@@ -3,7 +3,7 @@ package com.marblet.idp.presentation
 import com.marblet.idp.application.GetConsentScreenUseCase
 import com.marblet.idp.application.GrantUseCase
 import com.marblet.idp.application.error.AuthorizationApplicationError
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.presentation.dto.ErrorResponse

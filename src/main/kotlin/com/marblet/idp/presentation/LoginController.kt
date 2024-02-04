@@ -1,7 +1,7 @@
 package com.marblet.idp.presentation
 
 import com.marblet.idp.application.AuthenticateUseCase
-import com.marblet.idp.config.EndpointPath
+import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.RawPassword
 import com.marblet.idp.domain.model.UnauthenticatedUser
 import jakarta.servlet.http.Cookie

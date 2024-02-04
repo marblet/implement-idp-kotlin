@@ -45,4 +45,22 @@ class RequestScopesTest {
 
         assertThat(actual).isNull()
     }
+
+    @Test
+    fun returnTrueIfScopesHasOpenidScope() {
+        val target = RequestScopes(setOf("openid", "email"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isTrue()
+    }
+
+    @Test
+    fun returnFalseIfNoOpenidScope() {
+        val target = RequestScopes(setOf("a", "b"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isFalse()
+    }
 }

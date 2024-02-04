@@ -36,4 +36,6 @@ data class RequestScopes(private val value: Set<String>) {
     fun toAuthorizationCodeScopes() = AuthorizationCodeScopes(value)
 
     fun toTokenScopes() = TokenScopes(value)
+
+    fun hasOpenidScope() = value.contains(OpenidScope.OPENID.value)
 }

@@ -3,6 +3,7 @@ package com.marblet.idp.application
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import com.marblet.idp.application.IssueTokenUseCase.Error.AuthCodeExpired
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RefreshTokenPayload
@@ -18,6 +19,7 @@ class IssueTokenUseCase(
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val accessTokenConverter: AccessTokenConverter,
     private val refreshTokenConverter: RefreshTokenConverter,
+    private val idTokenGenerator: IdTokenGenerator,
 ) {
     fun run(
         authorizationHeader: String?,
@@ -55,9 +57,10 @@ class IssueTokenUseCase(
         if (authorizationCode.redirectUri.value != redirectUri) {
             return Error.InvalidRedirectUri.left()
         }
-        val accessTokenPayload = AccessTokenPayload.generate(authorizationCode) ?: return Error.AuthCodeExpired.left()
-        val accessToken = accessTokenConverter.encode(accessTokenPayload)
-        authorizationCodeRepository.delete(authorizationCode)
+        val accessTokenPayload =
+            AccessTokenPayload.generate(authorizationCode)
+                .fold({ return AuthCodeExpired.left() }, { it })
+        val accessToken = accessTokenPayload?.let { accessTokenConverter.encode(it) }
 
         // issue refresh token
         val refreshToken =
@@ -66,11 +69,18 @@ class IssueTokenUseCase(
             } else {
                 null
             }
+
+        // issue IDToken
+        val idToken = idTokenGenerator.generate(authorizationCode)
+
+        authorizationCodeRepository.delete(authorizationCode)
+
         return Response(
             accessToken = accessToken,
             tokenType = "bearer",
             expiresIn = AccessTokenPayload.EXPIRATION_SEC,
             refreshToken = refreshToken,
+            idToken = idToken,
         ).right()
     }
 
@@ -91,9 +101,10 @@ class IssueTokenUseCase(
     }
 
     data class Response(
-        val accessToken: String,
+        val accessToken: String?,
         val tokenType: String,
         val expiresIn: Long,
         val refreshToken: String?,
+        val idToken: String?,
     )
 }
