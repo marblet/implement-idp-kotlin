@@ -12,7 +12,7 @@ import java.time.ZoneId
 class IdTokenConverter(
     rsaKeyConfig: RsaKeyConfig,
 ) {
-    private val algorithm = Algorithm.RSA256(rsaKeyConfig.rsaPublicKey, rsaKeyConfig.rsaPrivateKey)
+    private val algorithm = Algorithm.RSA256(null, rsaKeyConfig.rsaPrivateKey)
 
     fun encode(payload: IdTokenPayload): String {
         return JWT.create()
