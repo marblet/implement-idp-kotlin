@@ -3,6 +3,7 @@ package com.marblet.idp.application
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import com.marblet.idp.application.IssueTokenUseCase.Error.AuthCodeExpired
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RefreshTokenPayload
@@ -56,8 +57,10 @@ class IssueTokenUseCase(
         if (authorizationCode.redirectUri.value != redirectUri) {
             return Error.InvalidRedirectUri.left()
         }
-        val accessTokenPayload = AccessTokenPayload.generate(authorizationCode) ?: return Error.AuthCodeExpired.left()
-        val accessToken = accessTokenConverter.encode(accessTokenPayload)
+        val accessTokenPayload =
+            AccessTokenPayload.generate(authorizationCode)
+                .fold({ return AuthCodeExpired.left() }, { it })
+        val accessToken = accessTokenPayload?.let { accessTokenConverter.encode(it) }
 
         // issue refresh token
         val refreshToken =
@@ -98,7 +101,7 @@ class IssueTokenUseCase(
     }
 
     data class Response(
-        val accessToken: String,
+        val accessToken: String?,
         val tokenType: String,
         val expiresIn: Long,
         val refreshToken: String?,
