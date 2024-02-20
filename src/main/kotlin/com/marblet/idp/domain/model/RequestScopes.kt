@@ -1,5 +1,8 @@
 package com.marblet.idp.domain.model
 
+/**
+ * ClientリクエストのScopeを表す。
+ */
 data class RequestScopes(private val value: Set<String>) {
     companion object {
         fun generate(

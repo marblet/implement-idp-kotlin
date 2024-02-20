@@ -36,6 +36,10 @@ class AuthorizationCode(
     }
 }
 
+/**
+ * AuthorizationCodeScopesは、認可コードに持たせるOauth2.0文脈のスコープを表す。
+ * "openid"やUserInfoのClaimsとして使われるスコープは、このスコープから除外する。
+ */
 data class AuthorizationCodeScopes(private val value: Set<String>) {
     companion object {
         fun fromSpaceSeparatedString(scope: String) = AuthorizationCodeScopes(scope.split(" ").toSet())
