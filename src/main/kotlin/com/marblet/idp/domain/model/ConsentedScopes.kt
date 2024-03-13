@@ -21,8 +21,6 @@ data class ConsentedScopes(private val value: Set<String>) {
 
     fun toSpaceSeparatedString() = value.joinToString(" ")
 
-    fun toAuthorizationCodeScopes() = AuthorizationCodeScopes(value)
-
     fun toTokenScopes(): TokenScopes? {
         // remove UserInfo scopes and openid scope
         val scopes = value - (UserInfoScope.entries.map { it.value }.toSet() + OpenidScope.entries.map { it.value }.toSet())
