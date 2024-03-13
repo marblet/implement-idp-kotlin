@@ -1,8 +1,8 @@
 package com.marblet.idp.infrastructure.repository
 
 import com.marblet.idp.domain.model.AuthorizationCode
-import com.marblet.idp.domain.model.AuthorizationCodeScopes
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.ConsentedScopes
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.model.UserId
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
@@ -26,7 +26,7 @@ class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
                 code = it[AuthorizationCodes.code],
                 userId = UserId(it[AuthorizationCodes.userId]),
                 clientId = ClientId(it[AuthorizationCodes.clientId]),
-                scopes = AuthorizationCodeScopes.fromSpaceSeparatedString(it[AuthorizationCodes.scope]),
+                scopes = ConsentedScopes.fromSpaceSeparatedString(it[AuthorizationCodes.scope]),
                 redirectUri = RedirectUri(it[AuthorizationCodes.redirectUri]),
                 expiration = it[AuthorizationCodes.expiration],
             )
