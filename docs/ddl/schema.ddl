@@ -37,6 +37,7 @@ CREATE TABLE consents (
     client_id VARCHAR(128) NOT NULL,
     scopes TEXT NOT NULL,
     created_at DATETIME NOT NULL default current_timestamp,
+    updated_at DATETIME default current_timestamp ON UPDATE current_timestamp,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (client_id) REFERENCES clients(id),
     PRIMARY KEY (user_id, client_id)

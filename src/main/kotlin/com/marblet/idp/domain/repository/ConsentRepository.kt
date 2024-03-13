@@ -9,4 +9,6 @@ interface ConsentRepository {
         userId: UserId,
         clientId: ClientId,
     ): Consent?
+
+    fun upsert(consent: Consent)
 }

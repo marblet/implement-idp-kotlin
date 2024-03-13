@@ -8,6 +8,7 @@ import com.marblet.idp.domain.repository.ConsentRepository
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.upsert
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,6 +27,14 @@ class ConsentRepositoryImpl : ConsentRepository {
                 clientId = ClientId(it[Consents.clientId]),
                 scopes = ConsentedScopes.fromSpaceSeparatedString(it[Consents.scopes]),
             )
+        }
+    }
+
+    override fun upsert(consent: Consent) {
+        Consents.upsert {
+            it[userId] = consent.userId.value
+            it[clientId] = consent.clientId.value
+            it[scopes] = consent.scopes.toSpaceSeparatedString()
         }
     }
 }
