@@ -19,7 +19,7 @@ class AuthorizationCode(
         fun generate(
             userId: UserId,
             clientId: ClientId,
-            scopes: RequestScopes,
+            scopes: ConsentedScopes,
             redirectUri: RedirectUri,
         ): AuthorizationCode {
             val code =

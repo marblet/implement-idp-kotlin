@@ -9,7 +9,7 @@ class AuthorizationCodeTest {
     fun generatedCodeLengthIs32() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = RequestScopes(setOf("a", "b"))
+        val scopes = ConsentedScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)
@@ -21,7 +21,7 @@ class AuthorizationCodeTest {
     fun generatedCodeIsAlphanumeric() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = RequestScopes(setOf("a", "b"))
+        val scopes = ConsentedScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)
@@ -33,7 +33,7 @@ class AuthorizationCodeTest {
     fun generatedCodeExpirationIsWithin10Minutes() {
         val userId = UserId("user-1")
         val clientId = ClientId("client-1")
-        val scopes = RequestScopes(setOf("a", "b"))
+        val scopes = ConsentedScopes(setOf("a", "b"))
         val redirectUri = RedirectUri("test")
 
         val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri)

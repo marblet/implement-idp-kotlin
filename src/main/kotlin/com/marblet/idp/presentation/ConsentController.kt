@@ -45,7 +45,7 @@ class ConsentController(
             {
                 model.addAttribute("clientName", it.clientName)
                 model.addAttribute("displayScope", it.scope)
-                model.addAttribute("scope", scope)
+                model.addAttribute("scope", it.scope)
                 model.addAttribute("clientId", clientId)
                 model.addAttribute("responseType", responseType)
                 model.addAttribute("redirectUri", redirectUri)
@@ -68,7 +68,7 @@ class ConsentController(
         @RequestParam(name = "client_id") clientId: String,
         @RequestParam(name = "response_type") responseType: String,
         @RequestParam(name = "redirect_uri") redirectUri: String,
-        @RequestParam scope: String?,
+        @RequestParam scope: String,
         @RequestParam state: String?,
         @CookieValue("login") loginCookie: String?,
     ): String {

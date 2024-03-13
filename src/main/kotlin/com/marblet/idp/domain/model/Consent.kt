@@ -5,12 +5,3 @@ data class Consent(
     val clientId: ClientId,
     val scopes: ConsentedScopes,
 )
-
-/**
- * ユーザ同意済みのスコープを表す。
- */
-data class ConsentedScopes(val value: Set<String>) {
-    companion object {
-        fun fromSpaceSeparatedString(scope: String) = ConsentedScopes(scope.split(" ").toSet())
-    }
-}

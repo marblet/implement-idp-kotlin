@@ -8,29 +8,32 @@ import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotAu
 import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotFound
 import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.Consent
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
+import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class GrantUseCase(
-    private val authorizationRequestValidator: AuthorizationRequestValidator,
+    private val grantRequestValidator: GrantRequestValidator,
     private val userRepository: UserRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
+    private val consentRepository: ConsentRepository,
 ) {
     fun run(
         clientId: ClientId,
         responseType: String,
         redirectUri: RedirectUri,
-        scope: String?,
+        scope: String,
         state: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         // verify client
         val request =
-            authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope)
+            grantRequestValidator.validate(clientId, responseType, redirectUri, scope)
                 .fold({ return it.left() }, { it })
 
         // verify user
@@ -39,8 +42,10 @@ class GrantUseCase(
         }
         val user = userRepository.get(loginCookie) ?: return UserNotFound.left()
 
-        val authorizationCode = AuthorizationCode.generate(user.id, clientId, request.requestScopes, redirectUri)
+        val authorizationCode = AuthorizationCode.generate(user.id, clientId, request.consentedScopes, redirectUri)
         authorizationCodeRepository.insert(authorizationCode)
+        consentRepository.upsert(Consent(user.id, clientId, request.consentedScopes))
+
         return Response(redirectUri, authorizationCode.code, state).right()
     }
 
