@@ -3,7 +3,7 @@ package com.marblet.idp.domain.model
 /**
  * ユーザ同意済みのスコープを表す。
  */
-data class ConsentedScopes(private val value: Set<String>) {
+data class ConsentedScopes(val value: Set<String>) {
     companion object {
         fun generate(
             scope: String,
