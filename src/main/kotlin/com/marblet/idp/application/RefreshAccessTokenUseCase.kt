@@ -6,6 +6,7 @@ import arrow.core.right
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.TokenError
+import com.marblet.idp.domain.repository.ConsentRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,6 +14,7 @@ class RefreshAccessTokenUseCase(
     private val clientBasicAuthentication: ClientBasicAuthentication,
     private val refreshTokenConverter: RefreshTokenConverter,
     private val accessTokenConverter: AccessTokenConverter,
+    private val consentRepository: ConsentRepository,
 ) {
     fun run(
         authorizationHeader: String?,
@@ -33,6 +35,12 @@ class RefreshAccessTokenUseCase(
             return Error.InvalidClient.left()
         }
         val requestScopes = RequestScopes.generate(scope, refreshTokenPayload.scopes) ?: return Error.InvalidScope.left()
+
+        // verify consent
+        val consent = consentRepository.get(refreshTokenPayload.userId, refreshTokenPayload.clientId) ?: return Error.ConsentNotFound.left()
+        if (!consent.satisfies(requestScopes)) {
+            return Error.ConsentInvalid.left()
+        }
 
         // issue access token
         val accessToken =
@@ -60,6 +68,10 @@ class RefreshAccessTokenUseCase(
         data object InvalidScope : Error(TokenError.INVALID_SCOPE, "invalid scope")
 
         data object RefreshTokenExpired : Error(TokenError.INVALID_REQUEST, "refresh_token has expired")
+
+        data object ConsentNotFound : Error(TokenError.INVALID_GRANT, "consent not found")
+
+        data object ConsentInvalid : Error(TokenError.INVALID_GRANT, "consent not sufficient")
     }
 
     data class Response(
