@@ -20,8 +20,9 @@ class GetAuthorizeUseCase(
         redirectUri: RedirectUri,
         scope: String?,
         state: String?,
+        loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
-        authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope)
+        authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, loginCookie)
             .onLeft { return it.left() }
         val consentUrl =
             consentUrlGenerator.generate(

@@ -16,17 +16,20 @@ import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.ResponseType.CODE
 import com.marblet.idp.domain.model.ValidatedAuthorizationRequest
 import com.marblet.idp.domain.repository.ClientRepository
+import com.marblet.idp.domain.repository.UserRepository
 import org.springframework.stereotype.Service
 
 @Service
 class AuthorizationRequestValidator(
     private val clientRepository: ClientRepository,
+    private val userRepository: UserRepository,
 ) {
     fun validate(
         clientId: ClientId,
         responseType: String,
         redirectUri: RedirectUri,
         scope: String?,
+        loginCookie: String?,
     ): Either<AuthorizationApplicationError, ValidatedAuthorizationRequest> {
         val client = clientRepository.get(clientId) ?: return ClientNotExist.left()
         if (responseType != "code") {
@@ -36,17 +39,20 @@ class AuthorizationRequestValidator(
             return RedirectUriInvalid.left()
         }
         val requestScopes = RequestScopes.generate(scope, client.scopes) ?: return ScopeInvalid.left()
+        val user = loginCookie?.let { userRepository.get(loginCookie) }
         return if (requestScopes.hasOpenidScope()) {
             OidcAuthorizationRequest(
                 client = client,
                 responseType = CODE,
                 requestScopes = requestScopes,
+                user = user,
             ).right()
         } else {
             OauthAuthorizationRequest(
                 client = client,
                 responseType = CODE,
                 requestScopes = requestScopes,
+                user = user,
             ).right()
         }
     }
