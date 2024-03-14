@@ -22,8 +22,8 @@ class GetAuthorizeUseCase(
         state: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
-        authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, loginCookie)
-            .onLeft { return it.left() }
+        val request = authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, loginCookie)
+            .fold({ return it.left() }, { it })
         val consentUrl =
             consentUrlGenerator.generate(
                 clientId,
@@ -32,6 +32,9 @@ class GetAuthorizeUseCase(
                 scope,
                 state,
             )
+        if (request.user != null) {
+            return Response(consentUrl).right()
+        }
         return Response(loginUrlGenerator.generate(consentUrl)).right()
     }
 
