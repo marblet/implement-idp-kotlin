@@ -17,4 +17,6 @@ sealed class AuthorizationApplicationError(val error: AuthorizationError, val de
     data object UserNotFound : AuthorizationApplicationError(AuthorizationError.INVALID_REQUEST, "user not found.")
 
     data object UserNotAuthenticated : AuthorizationApplicationError(AuthorizationError.INVALID_REQUEST, "user not logged in.")
+
+    data object LoginRequired : AuthorizationApplicationError(AuthorizationError.INVALID_REQUEST, "login required")
 }

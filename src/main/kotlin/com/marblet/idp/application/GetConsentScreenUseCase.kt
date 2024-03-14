@@ -19,10 +19,11 @@ class GetConsentScreenUseCase(
         redirectUri: RedirectUri,
         scope: String?,
         state: String?,
+        prompt: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         val request =
-            authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, loginCookie)
+            authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, prompt, loginCookie)
                 .fold({ return it.left() }, { it })
         if (request.user == null) {
             return UserNotAuthenticated.left()

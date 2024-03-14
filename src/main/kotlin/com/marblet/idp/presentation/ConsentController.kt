@@ -30,6 +30,7 @@ class ConsentController(
         @RequestParam(name = "redirect_uri") redirectUri: String,
         @RequestParam scope: String?,
         @RequestParam state: String?,
+        @RequestParam prompt: String?,
         @CookieValue("login") loginCookie: String?,
         model: Model,
     ): String {
@@ -39,6 +40,7 @@ class ConsentController(
             RedirectUri(redirectUri),
             scope,
             state,
+            prompt,
             loginCookie,
         ).fold(
             { throw GetConsentScreenException(it, state) },

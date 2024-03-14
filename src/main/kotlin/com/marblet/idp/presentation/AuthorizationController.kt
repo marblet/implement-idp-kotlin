@@ -27,6 +27,7 @@ class AuthorizationController(
         @RequestParam(name = "redirect_uri") redirectUri: String,
         @RequestParam scope: String?,
         @RequestParam state: String?,
+        @RequestParam prompt: String?,
         @CookieValue("login") loginCookie: String?,
     ): ResponseEntity<Void> {
         return getAuthorizeUseCase.run(
@@ -35,7 +36,8 @@ class AuthorizationController(
             RedirectUri(redirectUri),
             scope,
             state,
-            loginCookie
+            prompt,
+            loginCookie,
         ).fold(
             { throw GetAuthorizeException(it, state) },
             { ResponseEntity.status(HttpStatus.FOUND).header("Location", it.redirectUri).build() },
