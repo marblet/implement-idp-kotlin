@@ -66,8 +66,8 @@ class GetAuthorizeUseCase(
                 clientId,
                 ConsentedScopes(request.requestScopes.value),
                 redirectUri,
+                authorizationCodeRepository,
             )
-        authorizationCodeRepository.insert(authorizationCode)
 
         val callbackUri = clientCallbackUrlGenerator.generate(redirectUri, authorizationCode, state)
 
