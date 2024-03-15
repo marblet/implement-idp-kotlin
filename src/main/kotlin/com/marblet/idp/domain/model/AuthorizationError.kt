@@ -8,4 +8,6 @@ enum class AuthorizationError(val error: String) {
     INVALID_SCOPE("invalid_scope"),
     SERVER_ERROR("server_error"),
     TEMPORARILY_UNAVAILABLE("temporarily_unavailable"),
+    LOGIN_REQUIRED("login_required"),
+    CONSENT_REQUIRED("consent_required"),
 }

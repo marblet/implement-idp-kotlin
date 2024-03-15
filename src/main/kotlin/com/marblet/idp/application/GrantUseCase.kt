@@ -42,8 +42,14 @@ class GrantUseCase(
         }
         val user = userRepository.get(loginCookie) ?: return UserNotFound.left()
 
-        val authorizationCode = AuthorizationCode.generate(user.id, clientId, request.consentedScopes, redirectUri)
-        authorizationCodeRepository.insert(authorizationCode)
+        val authorizationCode =
+            AuthorizationCode.generate(
+                user.id,
+                clientId,
+                request.consentedScopes,
+                redirectUri,
+                authorizationCodeRepository,
+            )
         consentRepository.upsert(Consent(user.id, clientId, request.consentedScopes))
 
         return Response(redirectUri, authorizationCode.code, state).right()

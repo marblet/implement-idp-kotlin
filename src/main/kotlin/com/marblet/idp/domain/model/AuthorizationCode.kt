@@ -1,5 +1,6 @@
 package com.marblet.idp.domain.model
 
+import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -21,13 +22,16 @@ class AuthorizationCode(
             clientId: ClientId,
             scopes: ConsentedScopes,
             redirectUri: RedirectUri,
+            authorizationCodeRepository: AuthorizationCodeRepository,
         ): AuthorizationCode {
             val code =
                 (1..CODE_LENGTH)
                     .map { Random.nextInt(0, charPool.size).let { charPool[it] } }
                     .joinToString("")
             val expiration = LocalDateTime.now().plusMinutes(EXPIRATION_MINUTES)
-            return AuthorizationCode(code, userId, clientId, scopes, redirectUri, expiration)
+            val authorizationCode = AuthorizationCode(code, userId, clientId, scopes, redirectUri, expiration)
+            authorizationCodeRepository.insert(authorizationCode)
+            return authorizationCode
         }
     }
 

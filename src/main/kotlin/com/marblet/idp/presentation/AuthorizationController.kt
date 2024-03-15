@@ -8,6 +8,7 @@ import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.presentation.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,6 +27,8 @@ class AuthorizationController(
         @RequestParam(name = "redirect_uri") redirectUri: String,
         @RequestParam scope: String?,
         @RequestParam state: String?,
+        @RequestParam prompt: String?,
+        @CookieValue("login") loginCookie: String?,
     ): ResponseEntity<Void> {
         return getAuthorizeUseCase.run(
             ClientId(clientId),
@@ -33,6 +36,8 @@ class AuthorizationController(
             RedirectUri(redirectUri),
             scope,
             state,
+            prompt,
+            loginCookie,
         ).fold(
             { throw GetAuthorizeException(it, state) },
             { ResponseEntity.status(HttpStatus.FOUND).header("Location", it.redirectUri).build() },
