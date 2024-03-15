@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.marblet.idp.application.error.AuthorizationApplicationError
+import com.marblet.idp.application.error.AuthorizationApplicationError.ConsentRequired
 import com.marblet.idp.application.error.AuthorizationApplicationError.LoginRequired
 import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.ClientId
@@ -53,6 +54,9 @@ class GetAuthorizeUseCase(
         }
 
         val consent = consentRepository.get(request.user.id, request.client.clientId)
+        if (consent == null && request.promptSet.contains(Prompt.NONE)) {
+            return ConsentRequired.left()
+        }
         if (consent == null ||
             !consent.satisfies(request.requestScopes) ||
             request.promptSet.contains(Prompt.CONSENT)
