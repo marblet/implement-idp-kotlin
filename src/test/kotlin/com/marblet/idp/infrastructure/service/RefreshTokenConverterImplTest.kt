@@ -1,4 +1,4 @@
-package com.marblet.idp.application
+package com.marblet.idp.infrastructure.service
 
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.RefreshTokenPayload
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class RefreshTokenConverterTest {
+class RefreshTokenConverterImplTest {
     @Test
     fun converterCanEncodeAndDecodeRefreshToken() {
         val issuedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
@@ -21,7 +21,7 @@ class RefreshTokenConverterTest {
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusDays(28L),
             )
-        val target = RefreshTokenConverter()
+        val target = RefreshTokenConverterImpl()
 
         val jwt = target.encode(refreshTokenPayload)
         val actual = target.decode(jwt)
@@ -41,7 +41,7 @@ class RefreshTokenConverterTest {
                 issuedAt = issuedAt,
                 expiration = expiration,
             )
-        val target = RefreshTokenConverter()
+        val target = RefreshTokenConverterImpl()
 
         val jwt = target.encode(refreshTokenPayload)
         val actual = target.decode(jwt)
@@ -51,7 +51,7 @@ class RefreshTokenConverterTest {
 
     @Test
     fun decoderReturnsNullWhenTokenInvalid() {
-        val target = RefreshTokenConverter()
+        val target = RefreshTokenConverterImpl()
 
         val actual = target.decode("thisis.invalid.token")
 

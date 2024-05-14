@@ -8,6 +8,7 @@ import com.marblet.idp.domain.model.RequestScopes
 import com.marblet.idp.domain.model.TokenError
 import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.service.AccessTokenConverter
+import com.marblet.idp.domain.service.RefreshTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
