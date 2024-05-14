@@ -13,6 +13,9 @@ data class IdTokenPayload(
         private const val EXPIRATION_SEC = 3600L
 
         fun generate(authorizationCode: AuthorizationCode): IdTokenPayload? {
+            if (!authorizationCode.scopes.hasOpenidScope()) {
+                return null
+            }
             if (authorizationCode.isExpired()) {
                 return null
             }
