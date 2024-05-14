@@ -2,6 +2,7 @@ package com.marblet.idp.application
 
 import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.IdTokenPayload
+import com.marblet.idp.domain.service.IdTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
