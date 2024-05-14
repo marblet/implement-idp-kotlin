@@ -10,6 +10,7 @@ import com.marblet.idp.domain.model.RefreshTokenPayload
 import com.marblet.idp.domain.model.TokenError
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import com.marblet.idp.domain.repository.ClientRepository
+import com.marblet.idp.domain.service.AccessTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
