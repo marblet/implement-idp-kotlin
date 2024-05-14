@@ -1,4 +1,4 @@
-package com.marblet.idp.application
+package com.marblet.idp.infrastructure.service
 
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class AccessTokenConverterTest {
+class AccessTokenConverterImplTest {
     @Test
     fun converterCanEncodeAndDecodeAccessToken() {
         val issuedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
@@ -21,7 +21,7 @@ class AccessTokenConverterTest {
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(3600L),
             )
-        val target = AccessTokenConverter()
+        val target = AccessTokenConverterImpl()
 
         val jwt = target.encode(accessTokenPayload)
         val actual = target.decode(jwt)
@@ -40,7 +40,7 @@ class AccessTokenConverterTest {
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(3600L),
             )
-        val target = AccessTokenConverter()
+        val target = AccessTokenConverterImpl()
 
         val jwt = target.encode(accessTokenPayload)
         val actual = target.decode(jwt)
@@ -50,7 +50,7 @@ class AccessTokenConverterTest {
 
     @Test
     fun decoderReturnsNullWhenTokenInvalid() {
-        val target = AccessTokenConverter()
+        val target = AccessTokenConverterImpl()
 
         val actual = target.decode("thisis.invalid.token")
 

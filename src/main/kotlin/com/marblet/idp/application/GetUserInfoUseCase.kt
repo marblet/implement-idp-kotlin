@@ -12,6 +12,7 @@ import com.marblet.idp.domain.model.UserInfoError.INVALID_REQUEST
 import com.marblet.idp.domain.model.UserInfoError.INVALID_TOKEN
 import com.marblet.idp.domain.model.UserInfoRequestScopes
 import com.marblet.idp.domain.repository.UserInfoRepository
+import com.marblet.idp.domain.service.AccessTokenConverter
 import org.springframework.stereotype.Service
 
 @Service

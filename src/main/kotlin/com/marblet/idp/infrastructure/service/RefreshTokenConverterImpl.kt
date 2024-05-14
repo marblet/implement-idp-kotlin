@@ -1,27 +1,28 @@
-package com.marblet.idp.application
+package com.marblet.idp.infrastructure.service
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.exceptions.TokenExpiredException
-import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.RefreshTokenPayload
 import com.marblet.idp.domain.model.TokenScopes
 import com.marblet.idp.domain.model.UserId
+import com.marblet.idp.domain.service.RefreshTokenConverter
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.ZoneId
 
 @Service
-class AccessTokenConverter {
+class RefreshTokenConverterImpl : RefreshTokenConverter {
     companion object {
         // TODO load the secret from config
         private val algorithm = Algorithm.HMAC256("secret")
         private const val SCOPE_CLAIM_NAME = "sco"
     }
 
-    fun encode(payload: AccessTokenPayload): String {
+    override fun encode(payload: RefreshTokenPayload): String {
         return JWT.create()
             .withSubject(payload.userId.value)
             .withIssuedAt(Instant.ofEpochSecond(payload.issuedAt.atZone(ZoneId.systemDefault()).toEpochSecond()))
@@ -31,11 +32,11 @@ class AccessTokenConverter {
             .sign(algorithm)
     }
 
-    fun decode(accessToken: String): AccessTokenPayload? {
+    override fun decode(refreshToken: String): RefreshTokenPayload? {
         val verifier = JWT.require(algorithm).build() // verify sign, iat, and exp
         try {
-            val decodedJWT = verifier.verify(accessToken)
-            return AccessTokenPayload(
+            val decodedJWT = verifier.verify(refreshToken)
+            return RefreshTokenPayload(
                 userId = UserId(decodedJWT.subject),
                 clientId = ClientId(decodedJWT.audience[0]),
                 scopes = TokenScopes.fromSpaceSeparatedString(decodedJWT.getClaim(SCOPE_CLAIM_NAME).asString()),

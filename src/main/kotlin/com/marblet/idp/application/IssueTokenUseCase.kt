@@ -6,10 +6,14 @@ import arrow.core.right
 import com.marblet.idp.application.IssueTokenUseCase.Error.AuthCodeExpired
 import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.ClientId
+import com.marblet.idp.domain.model.IdTokenPayload
 import com.marblet.idp.domain.model.RefreshTokenPayload
 import com.marblet.idp.domain.model.TokenError
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import com.marblet.idp.domain.repository.ClientRepository
+import com.marblet.idp.domain.service.AccessTokenConverter
+import com.marblet.idp.domain.service.IdTokenConverter
+import com.marblet.idp.domain.service.RefreshTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +23,7 @@ class IssueTokenUseCase(
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val accessTokenConverter: AccessTokenConverter,
     private val refreshTokenConverter: RefreshTokenConverter,
-    private val idTokenGenerator: IdTokenGenerator,
+    private val idTokenConverter: IdTokenConverter,
 ) {
     fun run(
         authorizationHeader: String?,
@@ -71,7 +75,7 @@ class IssueTokenUseCase(
             }
 
         // issue IDToken
-        val idToken = idTokenGenerator.generate(authorizationCode)
+        val idToken = IdTokenPayload.generate(authorizationCode)?.let { idTokenConverter.encode(it) }
 
         authorizationCodeRepository.delete(authorizationCode)
 
