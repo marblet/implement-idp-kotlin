@@ -44,12 +44,12 @@ class ConsentedScopesTest {
 
         val actual = target.toTokenScopes()
 
-        assertThat(actual).isEqualTo(TokenScopes(setOf("a", "b")))
+        assertThat(actual).isEqualTo(TokenScopes(setOf("email", "a", "b")))
     }
 
     @Test
     fun returnNullIfAccessTokenScopesNotExist() {
-        val target = ConsentedScopes(setOf("openid", "phone"))
+        val target = ConsentedScopes(setOf("openid"))
 
         val actual = target.toTokenScopes()
 

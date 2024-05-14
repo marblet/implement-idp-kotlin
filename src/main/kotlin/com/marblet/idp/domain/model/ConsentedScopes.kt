@@ -23,7 +23,7 @@ data class ConsentedScopes(val value: Set<String>) {
 
     fun toTokenScopes(): TokenScopes? {
         // remove UserInfo scopes and openid scope
-        val scopes = value - (UserInfoScope.entries.map { it.value }.toSet() + OpenidScope.entries.map { it.value }.toSet())
+        val scopes = value - OpenidScope.entries.map { it.value }.toSet()
         if (scopes.isEmpty()) {
             return null
         }

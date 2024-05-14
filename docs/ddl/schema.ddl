@@ -42,3 +42,15 @@ CREATE TABLE consents (
     FOREIGN KEY (client_id) REFERENCES clients(id),
     PRIMARY KEY (user_id, client_id)
 );
+
+CREATE TABLE userinfos (
+    user_id VARCHAR(128) NOT NULL,
+    name VARCHAR(256),
+    email VARCHAR(256),
+    phone_number VARCHAR(20),
+    address VARCHAR(256),
+    created_at DATETIME NOT NULL default current_timestamp,
+    updated_at DATETIME NOT NULL default current_timestamp ON UPDATE current_timestamp,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    PRIMARY KEY (user_id)
+);
