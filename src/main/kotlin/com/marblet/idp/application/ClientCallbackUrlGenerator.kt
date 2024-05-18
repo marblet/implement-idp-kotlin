@@ -1,6 +1,5 @@
 package com.marblet.idp.application
 
-import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.RedirectUri
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
@@ -9,13 +8,26 @@ import org.springframework.web.util.UriComponentsBuilder
 class ClientCallbackUrlGenerator {
     fun generate(
         redirectUri: RedirectUri,
-        authorizationCode: AuthorizationCode,
+        code: String?,
+        accessToken: String?,
         state: String?,
     ): String {
-        val builder =
-            UriComponentsBuilder.fromUriString(redirectUri.value)
-                .queryParam("code", authorizationCode.code)
-        state?.let { builder.queryParam("state", it) }
-        return builder.build().toUriString()
+        if (accessToken == null) {
+            val builder =
+                UriComponentsBuilder.fromUriString(redirectUri.value)
+                    .queryParam("code", code)
+            state?.let { builder.queryParam("state", it) }
+            return builder.build().toUriString()
+        }
+        val fragment =
+            listOfNotNull(
+                "access_token=$accessToken&token_type=Bearer",
+                code?.let { "code=$it" },
+                state?.let { "state=$it" },
+            )
+                .joinToString("&")
+        return UriComponentsBuilder.fromUriString(redirectUri.value)
+            .fragment(fragment)
+            .build().toUriString()
     }
 }

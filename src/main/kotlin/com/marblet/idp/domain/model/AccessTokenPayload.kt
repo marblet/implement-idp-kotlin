@@ -40,11 +40,35 @@ data class AccessTokenPayload(
             }
             val issuedAt = LocalDateTime.now()
             return AccessTokenPayload(
-                refreshTokenPayload.userId,
-                refreshTokenPayload.clientId,
-                scopes.toTokenScopes(),
-                issuedAt,
-                issuedAt.plusSeconds(EXPIRATION_SEC),
+                userId = refreshTokenPayload.userId,
+                clientId = refreshTokenPayload.clientId,
+                scopes = scopes.toTokenScopes(),
+                issuedAt = issuedAt,
+                expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+            )
+        }
+
+        fun generate(validatedAuthorizationRequest: ValidatedAuthorizationRequest): AccessTokenPayload {
+            val issuedAt = LocalDateTime.now()
+            return AccessTokenPayload(
+                // TODO: remove '!!'
+                userId = validatedAuthorizationRequest.user?.id!!,
+                clientId = validatedAuthorizationRequest.client.clientId,
+                scopes = validatedAuthorizationRequest.requestScopes.toTokenScopes(),
+                issuedAt = issuedAt,
+                expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+            )
+        }
+
+        fun generate(validatedGrantRequest: ValidatedGrantRequest): AccessTokenPayload {
+            val issuedAt = LocalDateTime.now()
+            return AccessTokenPayload(
+                userId = validatedGrantRequest.user.id,
+                clientId = validatedGrantRequest.client.clientId,
+                // TODO: remove '!!'
+                scopes = validatedGrantRequest.consentedScopes.toTokenScopes()!!,
+                issuedAt = issuedAt,
+                expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
             )
         }
     }
