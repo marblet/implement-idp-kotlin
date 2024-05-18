@@ -6,6 +6,7 @@ import arrow.core.right
 import com.marblet.idp.application.error.AuthorizationApplicationError
 import com.marblet.idp.application.error.AuthorizationApplicationError.ConsentRequired
 import com.marblet.idp.application.error.AuthorizationApplicationError.LoginRequired
+import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ClientNotExist
 import com.marblet.idp.domain.model.AuthorizationRequestCreateError.RedirectUriInvalid
@@ -20,6 +21,7 @@ import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import com.marblet.idp.domain.repository.ClientRepository
 import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
+import com.marblet.idp.domain.service.AccessTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,6 +33,7 @@ class GetAuthorizeUseCase(
     private val userRepository: UserRepository,
     private val consentRepository: ConsentRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
+    private val accessTokenConverter: AccessTokenConverter,
 ) {
     fun run(
         clientId: ClientId,
@@ -86,15 +89,33 @@ class GetAuthorizeUseCase(
         }
 
         val authorizationCode =
-            AuthorizationCode.generate(
-                request.user.id,
-                clientId,
-                ConsentedScopes(request.requestScopes.value),
-                redirectUri,
-                authorizationCodeRepository,
-            )
+            if (request.responseType.hasCode()) {
+                AuthorizationCode.generate(
+                    request.user.id,
+                    clientId,
+                    ConsentedScopes(request.requestScopes.value),
+                    redirectUri,
+                    authorizationCodeRepository,
+                )
+            } else {
+                null
+            }
 
-        val callbackUri = clientCallbackUrlGenerator.generate(redirectUri, authorizationCode, state)
+        val accessToken =
+            if (request.responseType.hasToken()) {
+                val accessTokenPayload = AccessTokenPayload.generate(request)
+                accessTokenConverter.encode(accessTokenPayload)
+            } else {
+                null
+            }
+
+        val callbackUri =
+            clientCallbackUrlGenerator.generate(
+                redirectUri = redirectUri,
+                code = authorizationCode?.code,
+                accessToken = accessToken,
+                state = state,
+            )
 
         return Response(callbackUri).right()
     }

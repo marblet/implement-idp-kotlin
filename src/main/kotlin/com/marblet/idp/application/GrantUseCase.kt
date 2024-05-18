@@ -22,7 +22,6 @@ import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
 import com.marblet.idp.domain.service.AccessTokenConverter
 import org.springframework.stereotype.Service
-import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class GrantUseCase(
@@ -31,6 +30,7 @@ class GrantUseCase(
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val consentRepository: ConsentRepository,
     private val accessTokenConverter: AccessTokenConverter,
+    private val clientCallbackUrlGenerator: ClientCallbackUrlGenerator,
 ) {
     fun run(
         clientId: ClientId,
@@ -82,32 +82,16 @@ class GrantUseCase(
                 null
             }
 
-        return Response(redirectUri, authorizationCode?.code, accessToken, state).right()
+        return Response(
+            redirectTo =
+                clientCallbackUrlGenerator.generate(
+                    redirectUri = redirectUri,
+                    code = authorizationCode?.code,
+                    accessToken = accessToken,
+                    state = state,
+                ),
+        ).right()
     }
 
-    class Response(redirectUri: RedirectUri, code: String?, accessToken: String?, state: String?) {
-        val redirectTo: String
-
-        init {
-            this.redirectTo =
-                if (accessToken == null) {
-                    val builder =
-                        UriComponentsBuilder.fromUriString(redirectUri.value)
-                            .queryParam("code", code)
-                    state?.let { builder.queryParam("state", it) }
-                    builder.build().toUriString()
-                } else {
-                    val fragment =
-                        listOfNotNull(
-                            accessToken?.let { "access_token=$accessToken&token_type=Bearer" },
-                            code?.let { "code=$it" },
-                            state?.let { "state=$it" },
-                        )
-                            .joinToString("&")
-                    UriComponentsBuilder.fromUriString(redirectUri.value)
-                        .fragment(fragment)
-                        .build().toUriString()
-                }
-        }
-    }
+    data class Response(val redirectTo: String)
 }
