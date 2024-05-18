@@ -1,9 +1,10 @@
 package com.marblet.idp.domain.model
 
 import com.marblet.idp.domain.model.ResponseType.CODE
-import com.marblet.idp.domain.model.ResponseType.TOKEN
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 class ResponseTypeTest {
     @Test
@@ -20,30 +21,66 @@ class ResponseTypeTest {
         assertThat(actual).isNull()
     }
 
-    @Test
-    fun returnTrueIfEnumContainsCode() {
-        val actual = CODE.hasCode()
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["CODE", "CODE_IDTOKEN", "CODE_TOKEN", "CODE_IDTOKEN_TOKEN"])
+    fun hasCodeReturnTrueIfEnumContainsCode(responseType: ResponseType) {
+        val actual = responseType.hasCode()
 
         assertThat(actual).isTrue()
     }
 
-    @Test
-    fun returnFalseIfEnumNotContainCode() {
-        val actual = TOKEN.hasCode()
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["TOKEN", "IDTOKEN", "IDTOKEN_TOKEN"])
+    fun hasCodeReturnFalseIfEnumNotContainCode(responseType: ResponseType) {
+        val actual = responseType.hasCode()
 
         assertThat(actual).isFalse()
     }
 
-    @Test
-    fun returnTrueIfEnumContainsToken() {
-        val actual = TOKEN.hasToken()
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["TOKEN", "IDTOKEN_TOKEN", "CODE_TOKEN", "CODE_IDTOKEN_TOKEN"])
+    fun hasTokenReturnTrueIfEnumContainsToken(responseType: ResponseType) {
+        val actual = responseType.hasToken()
 
         assertThat(actual).isTrue()
     }
 
-    @Test
-    fun returnFalseIfEnumNotContainToken() {
-        val actual = CODE.hasToken()
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["CODE", "IDTOKEN", "CODE_IDTOKEN"])
+    fun hasTokenReturnFalseIfEnumNotContainToken(responseType: ResponseType) {
+        val actual = responseType.hasToken()
+
+        assertThat(actual).isFalse()
+    }
+
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["IDTOKEN", "IDTOKEN_TOKEN", "CODE_IDTOKEN", "CODE_IDTOKEN_TOKEN"])
+    fun hasIdTokenReturnTrueIfEnumContainsIdToken(responseType: ResponseType) {
+        val actual = responseType.hasIdToken()
+
+        assertThat(actual).isTrue()
+    }
+
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["CODE", "TOKEN", "CODE_TOKEN"])
+    fun hasIdTokenReturnFalseIfEnumNotContainIdToken(responseType: ResponseType) {
+        val actual = responseType.hasIdToken()
+
+        assertThat(actual).isFalse()
+    }
+
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["IDTOKEN", "IDTOKEN_TOKEN", "CODE_TOKEN", "CODE_IDTOKEN", "CODE_IDTOKEN_TOKEN"])
+    fun requiresOpenidScopeReturnTrueIfTriggersHybridFlow(responseType: ResponseType) {
+        val actual = responseType.requiresOpenidScope()
+
+        assertThat(actual).isTrue()
+    }
+
+    @ParameterizedTest
+    @EnumSource(ResponseType::class, names = ["CODE", "TOKEN"])
+    fun requiresOpenidScopeReturnFalseIfNotTriggerHybridFlow(responseType: ResponseType) {
+        val actual = responseType.requiresOpenidScope()
 
         assertThat(actual).isFalse()
     }

@@ -14,6 +14,7 @@ import com.marblet.idp.domain.model.GrantRequestCreateError.RedirectUriInvalid
 import com.marblet.idp.domain.model.GrantRequestCreateError.ResponseTypeInvalid
 import com.marblet.idp.domain.model.GrantRequestCreateError.ScopeInvalid
 import com.marblet.idp.domain.model.GrantRequestCreateError.UserNotFound
+import com.marblet.idp.domain.model.IdTokenPayload
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.model.ValidatedGrantRequest
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
@@ -21,6 +22,7 @@ import com.marblet.idp.domain.repository.ClientRepository
 import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
 import com.marblet.idp.domain.service.AccessTokenConverter
+import com.marblet.idp.domain.service.IdTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
@@ -30,6 +32,7 @@ class GrantUseCase(
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val consentRepository: ConsentRepository,
     private val accessTokenConverter: AccessTokenConverter,
+    private val idTokenConverter: IdTokenConverter,
     private val clientCallbackUrlGenerator: ClientCallbackUrlGenerator,
 ) {
     fun run(
@@ -76,8 +79,14 @@ class GrantUseCase(
 
         val accessToken =
             if (request.responseType.hasToken()) {
-                val accessTokenPayload = AccessTokenPayload.generate(request)
-                accessTokenConverter.encode(accessTokenPayload)
+                accessTokenConverter.encode(AccessTokenPayload.generate(request))
+            } else {
+                null
+            }
+
+        val idToken =
+            if (request.responseType.hasIdToken()) {
+                idTokenConverter.encode(IdTokenPayload.generate(request))
             } else {
                 null
             }
@@ -88,6 +97,7 @@ class GrantUseCase(
                     redirectUri = redirectUri,
                     code = authorizationCode?.code,
                     accessToken = accessToken,
+                    idToken = idToken,
                     state = state,
                 ),
         ).right()

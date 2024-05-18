@@ -14,6 +14,7 @@ import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ResponseType
 import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ScopeInvalid
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.ConsentedScopes
+import com.marblet.idp.domain.model.IdTokenPayload
 import com.marblet.idp.domain.model.Prompt
 import com.marblet.idp.domain.model.RedirectUri
 import com.marblet.idp.domain.model.ValidatedAuthorizationRequest
@@ -22,6 +23,7 @@ import com.marblet.idp.domain.repository.ClientRepository
 import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
 import com.marblet.idp.domain.service.AccessTokenConverter
+import com.marblet.idp.domain.service.IdTokenConverter
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,6 +36,7 @@ class GetAuthorizeUseCase(
     private val consentRepository: ConsentRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val accessTokenConverter: AccessTokenConverter,
+    private val idTokenConverter: IdTokenConverter,
 ) {
     fun run(
         clientId: ClientId,
@@ -103,8 +106,14 @@ class GetAuthorizeUseCase(
 
         val accessToken =
             if (request.responseType.hasToken()) {
-                val accessTokenPayload = AccessTokenPayload.generate(request)
-                accessTokenConverter.encode(accessTokenPayload)
+                accessTokenConverter.encode(AccessTokenPayload.generate(request))
+            } else {
+                null
+            }
+
+        val idToken =
+            if (request.responseType.hasIdToken()) {
+                idTokenConverter.encode(IdTokenPayload.generate(request))
             } else {
                 null
             }
@@ -114,6 +123,7 @@ class GetAuthorizeUseCase(
                 redirectUri = redirectUri,
                 code = authorizationCode?.code,
                 accessToken = accessToken,
+                idToken = idToken,
                 state = state,
             )
 

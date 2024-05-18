@@ -3,6 +3,11 @@ package com.marblet.idp.domain.model
 enum class ResponseType(val value: String) {
     CODE("code"),
     TOKEN("token"),
+    IDTOKEN("id_token"),
+    IDTOKEN_TOKEN("id_token token"),
+    CODE_IDTOKEN("code id_token"),
+    CODE_TOKEN("code token"),
+    CODE_IDTOKEN_TOKEN("code id_token token"),
     ;
 
     companion object {
@@ -13,14 +18,28 @@ enum class ResponseType(val value: String) {
 
     fun hasCode(): Boolean {
         return when (this) {
-            CODE -> true
+            CODE, CODE_IDTOKEN, CODE_TOKEN, CODE_IDTOKEN_TOKEN -> true
             else -> false
         }
     }
 
     fun hasToken(): Boolean {
         return when (this) {
-            TOKEN -> true
+            TOKEN, IDTOKEN_TOKEN, CODE_TOKEN, CODE_IDTOKEN_TOKEN -> true
+            else -> false
+        }
+    }
+
+    fun hasIdToken(): Boolean {
+        return when (this) {
+            IDTOKEN, IDTOKEN_TOKEN, CODE_IDTOKEN, CODE_IDTOKEN_TOKEN -> true
+            else -> false
+        }
+    }
+
+    fun requiresOpenidScope(): Boolean {
+        return when (this) {
+            IDTOKEN, IDTOKEN_TOKEN, CODE_TOKEN, CODE_IDTOKEN, CODE_IDTOKEN_TOKEN -> true
             else -> false
         }
     }

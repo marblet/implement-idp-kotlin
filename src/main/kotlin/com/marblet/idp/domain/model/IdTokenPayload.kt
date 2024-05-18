@@ -29,5 +29,30 @@ data class IdTokenPayload(
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
             )
         }
+
+        fun generate(validatedAuthorizationRequest: ValidatedAuthorizationRequest): IdTokenPayload {
+            val issuedAt = LocalDateTime.now()
+            return IdTokenPayload(
+                // TODO: issuer TBD
+                issuer = "marblet",
+                // TODO: remove '!!'
+                userId = validatedAuthorizationRequest.user?.id!!,
+                clientId = validatedAuthorizationRequest.client.clientId,
+                issuedAt = issuedAt,
+                expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+            )
+        }
+
+        fun generate(validatedGrantRequest: ValidatedGrantRequest): IdTokenPayload {
+            val issuedAt = LocalDateTime.now()
+            return IdTokenPayload(
+                // TODO: issuer TBD
+                issuer = "marblet",
+                userId = validatedGrantRequest.user.id,
+                clientId = validatedGrantRequest.client.clientId,
+                issuedAt = issuedAt,
+                expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+            )
+        }
     }
 }

@@ -10,9 +10,10 @@ class ClientCallbackUrlGenerator {
         redirectUri: RedirectUri,
         code: String?,
         accessToken: String?,
+        idToken: String?,
         state: String?,
     ): String {
-        if (accessToken == null) {
+        if (accessToken == null && idToken == null) {
             val builder =
                 UriComponentsBuilder.fromUriString(redirectUri.value)
                     .queryParam("code", code)
@@ -21,7 +22,8 @@ class ClientCallbackUrlGenerator {
         }
         val fragment =
             listOfNotNull(
-                "access_token=$accessToken&token_type=Bearer",
+                accessToken?.let { "access_token=$it&token_type=Bearer" },
+                idToken?.let { "id_token=$it" },
                 code?.let { "code=$it" },
                 state?.let { "state=$it" },
             )

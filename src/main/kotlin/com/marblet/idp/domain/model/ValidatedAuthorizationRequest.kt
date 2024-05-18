@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 
-sealed class ValidatedAuthorizationRequest(
+class ValidatedAuthorizationRequest private constructor(
     val client: Client,
     val responseType: ResponseType,
     val requestScopes: RequestScopes,
@@ -32,24 +32,17 @@ sealed class ValidatedAuthorizationRequest(
             if (responseType.hasToken() && requestScopes == RequestScopes(setOf(OpenidScope.OPENID.value))) {
                 return AuthorizationRequestCreateError.ScopeInvalid.left()
             }
-            val promptSet = PromptSet.from(prompt)
-            return if (requestScopes.hasOpenidScope()) {
-                OidcAuthorizationRequest(
-                    client = client,
-                    responseType = responseType,
-                    requestScopes = requestScopes,
-                    promptSet = promptSet,
-                    user = user,
-                ).right()
-            } else {
-                OauthAuthorizationRequest(
-                    client = client,
-                    responseType = responseType,
-                    requestScopes = requestScopes,
-                    promptSet = promptSet,
-                    user = user,
-                ).right()
+            if (responseType.requiresOpenidScope() && !requestScopes.hasOpenidScope()) {
+                return AuthorizationRequestCreateError.ScopeInvalid.left()
             }
+            val promptSet = PromptSet.from(prompt)
+            return ValidatedAuthorizationRequest(
+                client = client,
+                responseType = responseType,
+                requestScopes = requestScopes,
+                promptSet = promptSet,
+                user = user,
+            ).right()
         }
     }
 }
@@ -63,19 +56,3 @@ sealed class AuthorizationRequestCreateError {
 
     data object RedirectUriInvalid : AuthorizationRequestCreateError()
 }
-
-class OauthAuthorizationRequest(
-    client: Client,
-    responseType: ResponseType,
-    requestScopes: RequestScopes,
-    promptSet: PromptSet,
-    user: User?,
-) : ValidatedAuthorizationRequest(client, responseType, requestScopes, promptSet, user)
-
-class OidcAuthorizationRequest(
-    client: Client,
-    responseType: ResponseType,
-    requestScopes: RequestScopes,
-    promptSet: PromptSet,
-    user: User?,
-) : ValidatedAuthorizationRequest(client, responseType, requestScopes, promptSet, user)
