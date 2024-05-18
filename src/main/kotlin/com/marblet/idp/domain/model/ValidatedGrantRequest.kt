@@ -33,6 +33,9 @@ class ValidatedGrantRequest private constructor(
             if (responseType.hasToken() && consentedScopes == ConsentedScopes(setOf(OpenidScope.OPENID.value))) {
                 return GrantRequestCreateError.ScopeInvalid.left()
             }
+            if (responseType.requiresOpenidScope() && !consentedScopes.hasOpenidScope()) {
+                return GrantRequestCreateError.ScopeInvalid.left()
+            }
             return ValidatedGrantRequest(
                 client = client,
                 responseType = responseType,
