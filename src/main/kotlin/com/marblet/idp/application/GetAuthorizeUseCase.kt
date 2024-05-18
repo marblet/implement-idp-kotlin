@@ -7,20 +7,28 @@ import com.marblet.idp.application.error.AuthorizationApplicationError
 import com.marblet.idp.application.error.AuthorizationApplicationError.ConsentRequired
 import com.marblet.idp.application.error.AuthorizationApplicationError.LoginRequired
 import com.marblet.idp.domain.model.AuthorizationCode
+import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ClientNotExist
+import com.marblet.idp.domain.model.AuthorizationRequestCreateError.RedirectUriInvalid
+import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ResponseTypeInvalid
+import com.marblet.idp.domain.model.AuthorizationRequestCreateError.ScopeInvalid
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.ConsentedScopes
 import com.marblet.idp.domain.model.Prompt
 import com.marblet.idp.domain.model.RedirectUri
+import com.marblet.idp.domain.model.ValidatedAuthorizationRequest
 import com.marblet.idp.domain.repository.AuthorizationCodeRepository
+import com.marblet.idp.domain.repository.ClientRepository
 import com.marblet.idp.domain.repository.ConsentRepository
+import com.marblet.idp.domain.repository.UserRepository
 import org.springframework.stereotype.Service
 
 @Service
 class GetAuthorizeUseCase(
-    private val authorizationRequestValidator: AuthorizationRequestValidator,
     private val consentUrlGenerator: ConsentUrlGenerator,
     private val loginUrlGenerator: LoginUrlGenerator,
     private val clientCallbackUrlGenerator: ClientCallbackUrlGenerator,
+    private val clientRepository: ClientRepository,
+    private val userRepository: UserRepository,
     private val consentRepository: ConsentRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
 ) {
@@ -34,8 +42,21 @@ class GetAuthorizeUseCase(
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         val request =
-            authorizationRequestValidator.validate(clientId, responseType, redirectUri, scope, prompt, loginCookie)
-                .fold({ return it.left() }, { it })
+            ValidatedAuthorizationRequest.create(
+                client = clientRepository.get(clientId),
+                user = loginCookie?.let { userRepository.get(loginCookie) },
+                responseTypeInput = responseType,
+                redirectUri = redirectUri,
+                scope = scope,
+                prompt = prompt,
+            ).fold({
+                return when (it) {
+                    ClientNotExist -> AuthorizationApplicationError.ClientNotExist.left()
+                    ResponseTypeInvalid -> AuthorizationApplicationError.ResponseTypeInvalid.left()
+                    ScopeInvalid -> AuthorizationApplicationError.ScopeInvalid.left()
+                    RedirectUriInvalid -> AuthorizationApplicationError.RedirectUriInvalid.left()
+                }
+            }, { it })
 
         if (request.user == null && request.promptSet.contains(Prompt.NONE)) {
             return LoginRequired.left()
