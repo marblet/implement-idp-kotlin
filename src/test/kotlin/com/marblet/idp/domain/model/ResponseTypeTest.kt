@@ -21,6 +21,20 @@ class ResponseTypeTest {
     }
 
     @Test
+    fun returnTrueIfEnumContainsCode() {
+        val actual = CODE.hasCode()
+
+        assertThat(actual).isTrue()
+    }
+
+    @Test
+    fun returnFalseIfEnumNotContainCode() {
+        val actual = TOKEN.hasCode()
+
+        assertThat(actual).isFalse()
+    }
+
+    @Test
     fun returnTrueIfEnumContainsToken() {
         val actual = TOKEN.hasToken()
 

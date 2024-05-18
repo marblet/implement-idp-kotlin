@@ -11,6 +11,13 @@ enum class ResponseType(val value: String) {
         }
     }
 
+    fun hasCode(): Boolean {
+        return when (this) {
+            CODE -> true
+            else -> false
+        }
+    }
+
     fun hasToken(): Boolean {
         return when (this) {
             TOKEN -> true

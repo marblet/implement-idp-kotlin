@@ -5,6 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import com.marblet.idp.application.error.AuthorizationApplicationError
 import com.marblet.idp.application.error.AuthorizationApplicationError.UserNotAuthenticated
+import com.marblet.idp.domain.model.AccessTokenPayload
 import com.marblet.idp.domain.model.AuthorizationCode
 import com.marblet.idp.domain.model.ClientId
 import com.marblet.idp.domain.model.Consent
@@ -19,6 +20,7 @@ import com.marblet.idp.domain.repository.AuthorizationCodeRepository
 import com.marblet.idp.domain.repository.ClientRepository
 import com.marblet.idp.domain.repository.ConsentRepository
 import com.marblet.idp.domain.repository.UserRepository
+import com.marblet.idp.domain.service.AccessTokenConverter
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -28,6 +30,7 @@ class GrantUseCase(
     private val userRepository: UserRepository,
     private val authorizationCodeRepository: AuthorizationCodeRepository,
     private val consentRepository: ConsentRepository,
+    private val accessTokenConverter: AccessTokenConverter,
 ) {
     fun run(
         clientId: ClientId,
@@ -57,28 +60,54 @@ class GrantUseCase(
                 }
             }, { it })
 
-        val authorizationCode =
-            AuthorizationCode.generate(
-                request.user.id,
-                clientId,
-                request.consentedScopes,
-                redirectUri,
-                authorizationCodeRepository,
-            )
         consentRepository.upsert(Consent(request.user.id, clientId, request.consentedScopes))
+        val authorizationCode =
+            if (request.responseType.hasCode()) {
+                AuthorizationCode.generate(
+                    request.user.id,
+                    clientId,
+                    request.consentedScopes,
+                    redirectUri,
+                    authorizationCodeRepository,
+                )
+            } else {
+                null
+            }
 
-        return Response(redirectUri, authorizationCode.code, state).right()
+        val accessToken =
+            if (request.responseType.hasToken()) {
+                val accessTokenPayload = AccessTokenPayload.generate(request)
+                accessTokenConverter.encode(accessTokenPayload)
+            } else {
+                null
+            }
+
+        return Response(redirectUri, authorizationCode?.code, accessToken, state).right()
     }
 
-    class Response(redirectUri: RedirectUri, code: String, state: String?) {
+    class Response(redirectUri: RedirectUri, code: String?, accessToken: String?, state: String?) {
         val redirectTo: String
 
         init {
-            val builder =
-                UriComponentsBuilder.fromUriString(redirectUri.value)
-                    .queryParam("code", code)
-            state?.let { builder.queryParam("state", it) }
-            this.redirectTo = builder.build().toUriString()
+            this.redirectTo =
+                if (accessToken == null) {
+                    val builder =
+                        UriComponentsBuilder.fromUriString(redirectUri.value)
+                            .queryParam("code", code)
+                    state?.let { builder.queryParam("state", it) }
+                    builder.build().toUriString()
+                } else {
+                    val fragment =
+                        listOfNotNull(
+                            accessToken?.let { "access_token=$accessToken&token_type=Bearer" },
+                            code?.let { "code=$it" },
+                            state?.let { "state=$it" },
+                        )
+                            .joinToString("&")
+                    UriComponentsBuilder.fromUriString(redirectUri.value)
+                        .fragment(fragment)
+                        .build().toUriString()
+                }
         }
     }
 }

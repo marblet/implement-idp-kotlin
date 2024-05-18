@@ -64,7 +64,7 @@ sealed class AuthorizationRequestCreateError {
     data object RedirectUriInvalid : AuthorizationRequestCreateError()
 }
 
-internal class OauthAuthorizationRequest(
+class OauthAuthorizationRequest(
     client: Client,
     responseType: ResponseType,
     requestScopes: RequestScopes,
@@ -72,7 +72,7 @@ internal class OauthAuthorizationRequest(
     user: User?,
 ) : ValidatedAuthorizationRequest(client, responseType, requestScopes, promptSet, user)
 
-internal class OidcAuthorizationRequest(
+class OidcAuthorizationRequest(
     client: Client,
     responseType: ResponseType,
     requestScopes: RequestScopes,
