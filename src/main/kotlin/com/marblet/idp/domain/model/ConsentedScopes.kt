@@ -21,13 +21,8 @@ data class ConsentedScopes(val value: Set<String>) {
 
     fun toSpaceSeparatedString() = value.joinToString(" ")
 
-    fun toTokenScopes(): TokenScopes? {
-        // remove openid scope
-        val scopes = value - OpenidScope.entries.map { it.value }.toSet()
-        if (scopes.isEmpty()) {
-            return null
-        }
-        return TokenScopes(scopes)
+    fun toTokenScopes(): TokenScopes {
+        return TokenScopes(value)
     }
 
     fun hasOpenidScope() = value.contains(OpenidScope.OPENID.value)
