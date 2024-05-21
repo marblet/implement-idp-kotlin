@@ -1,5 +1,5 @@
 app:
-  origin:
+  origin: http://localhost:8080
 spring:
   datasource:
     url:

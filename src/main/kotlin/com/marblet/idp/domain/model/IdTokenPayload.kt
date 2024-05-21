@@ -3,7 +3,6 @@ package com.marblet.idp.domain.model
 import java.time.LocalDateTime
 
 data class IdTokenPayload(
-    val issuer: String,
     val userId: UserId,
     val clientId: ClientId,
     val issuedAt: LocalDateTime,
@@ -21,8 +20,6 @@ data class IdTokenPayload(
             }
             val issuedAt = LocalDateTime.now()
             return IdTokenPayload(
-                // TODO: issuer TBD
-                issuer = "marblet",
                 userId = authorizationCode.userId,
                 clientId = authorizationCode.clientId,
                 issuedAt = issuedAt,
@@ -33,8 +30,6 @@ data class IdTokenPayload(
         fun generate(validatedAuthorizationRequest: ValidatedAuthorizationRequest): IdTokenPayload {
             val issuedAt = LocalDateTime.now()
             return IdTokenPayload(
-                // TODO: issuer TBD
-                issuer = "marblet",
                 // TODO: remove '!!'
                 userId = validatedAuthorizationRequest.user?.id!!,
                 clientId = validatedAuthorizationRequest.client.clientId,
@@ -46,8 +41,6 @@ data class IdTokenPayload(
         fun generate(validatedGrantRequest: ValidatedGrantRequest): IdTokenPayload {
             val issuedAt = LocalDateTime.now()
             return IdTokenPayload(
-                // TODO: issuer TBD
-                issuer = "marblet",
                 userId = validatedGrantRequest.user.id,
                 clientId = validatedGrantRequest.client.clientId,
                 issuedAt = issuedAt,

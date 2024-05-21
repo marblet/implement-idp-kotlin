@@ -10,6 +10,7 @@ import java.util.Base64
 
 @Configuration
 class RsaKeyConfig(private val resourceLoader: ResourceLoader) {
+    val kid = "FyTxRzagrBgUeRC3neg3FbryhLj3Yf"
     val rsaPrivateKey = initRsaPrivateKey()
 
     private fun initRsaPrivateKey(): RSAPrivateKey {
