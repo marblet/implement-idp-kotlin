@@ -16,12 +16,11 @@ data class RefreshTokenPayload(
             if (authorizationCode.isExpired()) {
                 return null
             }
-            val tokenScopes = authorizationCode.scopes.toTokenScopes() ?: return null
             val issuedAt = LocalDateTime.now()
             return RefreshTokenPayload(
-                authorizationCode.userId,
-                authorizationCode.clientId,
-                tokenScopes,
+                userId = authorizationCode.userId,
+                clientId = authorizationCode.clientId,
+                scopes = authorizationCode.scopes.toTokenScopes(),
                 issuedAt,
                 issuedAt.plusDays(EXPIRATION_DAYS),
             )

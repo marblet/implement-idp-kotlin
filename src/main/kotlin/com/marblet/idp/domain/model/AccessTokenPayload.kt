@@ -1,7 +1,6 @@
 package com.marblet.idp.domain.model
 
 import arrow.core.Either
-import arrow.core.Either.Right
 import arrow.core.left
 import arrow.core.right
 import java.time.LocalDateTime
@@ -20,12 +19,11 @@ data class AccessTokenPayload(
             if (authorizationCode.isExpired()) {
                 return CodeExpired().left()
             }
-            val tokenScopes = authorizationCode.scopes.toTokenScopes() ?: return Right(null)
             val issuedAt = LocalDateTime.now()
             return AccessTokenPayload(
                 userId = authorizationCode.userId,
                 clientId = authorizationCode.clientId,
-                scopes = tokenScopes,
+                scopes = authorizationCode.scopes.toTokenScopes(),
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
             ).right()
@@ -66,7 +64,7 @@ data class AccessTokenPayload(
                 userId = validatedGrantRequest.user.id,
                 clientId = validatedGrantRequest.client.clientId,
                 // TODO: remove '!!'
-                scopes = validatedGrantRequest.consentedScopes.toTokenScopes()!!,
+                scopes = validatedGrantRequest.consentedScopes.toTokenScopes(),
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
             )
