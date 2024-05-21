@@ -7,7 +7,9 @@ import com.marblet.idp.application.RefreshAccessTokenUseCase
 import com.marblet.idp.configration.EndpointPath
 import com.marblet.idp.domain.model.GrantType
 import com.marblet.idp.presentation.dto.ErrorResponse
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,11 +23,63 @@ class TokenController(
     private val issueTokenUseCase: IssueTokenUseCase,
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
 ) {
-    @PostMapping
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun issueToken(
         @RequestHeader("Authorization") authorizationHeader: String?,
         @RequestBody requestBody: IssueTokenRequestBody,
     ): IssueTokenResponseBody {
+        if (requestBody.grantType == GrantType.AUTHORIZATION_CODE.value) {
+            return issueTokenUseCase.run(
+                authorizationHeader,
+                requestBody.code,
+                requestBody.redirectUri,
+                requestBody.clientId,
+            ).fold(
+                { throw IssueTokenException(it) },
+                {
+                    IssueTokenResponseBody(
+                        accessToken = it.accessToken,
+                        tokenType = it.tokenType,
+                        expiresIn = it.expiresIn,
+                        refreshToken = it.refreshToken,
+                        idToken = it.idToken,
+                    )
+                },
+            )
+        }
+        if (requestBody.grantType == GrantType.REFRESH_TOKEN.value) {
+            return refreshAccessTokenUseCase.run(
+                authorizationHeader,
+                requestBody.refreshToken,
+                requestBody.scope,
+            ).fold(
+                { throw RefreshAccessTokenException(it) },
+                {
+                    IssueTokenResponseBody(
+                        accessToken = it.accessToken,
+                        tokenType = it.tokenType,
+                        expiresIn = it.expiresIn,
+                    )
+                },
+            )
+        }
+        throw IssueTokenException(IssueTokenUseCase.Error.InvalidGrantType)
+    }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
+    fun issueToken(
+        @RequestHeader("Authorization") authorizationHeader: String?,
+        @RequestBody request: MultiValueMap<String, String>,
+    ): IssueTokenResponseBody {
+        val requestBody =
+            IssueTokenRequestBody(
+                grantType = request.getFirst("grant_type") ?: "",
+                code = request.getFirst("code"),
+                redirectUri = request.getFirst("redirect_uri"),
+                clientId = request.getFirst("client_id"),
+                scope = request.getFirst("scope"),
+                refreshToken = request.getFirst("refresh_token"),
+            )
         if (requestBody.grantType == GrantType.AUTHORIZATION_CODE.value) {
             return issueTokenUseCase.run(
                 authorizationHeader,
