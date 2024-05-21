@@ -11,12 +11,13 @@ import java.time.ZoneId
 
 @Service
 class IdTokenConverter(
-    rsaKeyConfig: RsaKeyConfig,
+    private val rsaKeyConfig: RsaKeyConfig,
 ) : IdTokenConverter {
     private val algorithm = Algorithm.RSA256(null, rsaKeyConfig.rsaPrivateKey)
 
     override fun encode(payload: IdTokenPayload): String {
         return JWT.create()
+            .withKeyId(rsaKeyConfig.kid)
             .withIssuer(payload.issuer)
             .withSubject(payload.userId.value)
             .withAudience(payload.clientId.value)
