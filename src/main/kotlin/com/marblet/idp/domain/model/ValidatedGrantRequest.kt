@@ -30,9 +30,6 @@ class ValidatedGrantRequest private constructor(
             }
             val consentedScopes = ConsentedScopes.generate(scope, client.scopes) ?: return GrantRequestCreateError.ScopeInvalid.left()
             // ref. docs/protocol_and_flow.md
-            if (responseType.hasToken() && consentedScopes == ConsentedScopes(setOf(OpenidScope.OPENID.value))) {
-                return GrantRequestCreateError.ScopeInvalid.left()
-            }
             if (responseType.requiresOpenidScope() && !consentedScopes.hasOpenidScope()) {
                 return GrantRequestCreateError.ScopeInvalid.left()
             }

@@ -29,9 +29,6 @@ class ValidatedAuthorizationRequest private constructor(
             }
             val requestScopes = RequestScopes.generate(scope, client.scopes) ?: return AuthorizationRequestCreateError.ScopeInvalid.left()
             // ref. docs/protocol_and_flow.md
-            if (responseType.hasToken() && requestScopes == RequestScopes(setOf(OpenidScope.OPENID.value))) {
-                return AuthorizationRequestCreateError.ScopeInvalid.left()
-            }
             if (responseType.requiresOpenidScope() && !requestScopes.hasOpenidScope()) {
                 return AuthorizationRequestCreateError.ScopeInvalid.left()
             }

@@ -73,7 +73,7 @@ class ValidatedAuthorizationRequestTest {
         }
 
         @Test
-        fun invalidScopeError() {
+        fun generateRequestOfOpenidScope() {
             val actual =
                 ValidatedAuthorizationRequest.create(
                     client = client,
@@ -84,7 +84,9 @@ class ValidatedAuthorizationRequestTest {
                     prompt = null,
                 )
 
-            assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
+            val request = actual.getOrNull()
+            assertThat(request?.responseType).isEqualTo(TOKEN)
+            assertThat(request?.requestScopes).isEqualTo(RequestScopes(setOf("openid")))
         }
     }
 

@@ -84,7 +84,7 @@ class ValidatedGrantRequestTest {
         }
 
         @Test
-        fun invalidScopeError() {
+        fun generateRequestOfOpenidScope() {
             val actual =
                 ValidatedGrantRequest.create(
                     client = client,
@@ -94,7 +94,8 @@ class ValidatedGrantRequestTest {
                     scope = "openid",
                 )
 
-            assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
+            val request = actual.getOrNull()
+            assertThat(request?.consentedScopes).isEqualTo(ConsentedScopes(setOf("openid")))
         }
     }
 
