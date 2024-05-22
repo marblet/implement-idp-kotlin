@@ -10,6 +10,7 @@ class ValidatedAuthorizationRequest private constructor(
     val requestScopes: RequestScopes,
     val promptSet: PromptSet,
     val user: User?,
+    val nonce: String?,
 ) {
     companion object {
         fun create(
@@ -19,6 +20,7 @@ class ValidatedAuthorizationRequest private constructor(
             redirectUri: RedirectUri,
             scope: String?,
             prompt: String?,
+            nonce: String?,
         ): Either<AuthorizationRequestCreateError, ValidatedAuthorizationRequest> {
             if (client == null) {
                 return AuthorizationRequestCreateError.ClientNotExist.left()
@@ -39,6 +41,7 @@ class ValidatedAuthorizationRequest private constructor(
                 requestScopes = requestScopes,
                 promptSet = promptSet,
                 user = user,
+                nonce = nonce,
             ).right()
         }
     }

@@ -41,6 +41,7 @@ class GrantUseCase(
         redirectUri: RedirectUri,
         scope: String,
         state: String?,
+        nonce: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         if (loginCookie == null) {
@@ -53,6 +54,7 @@ class GrantUseCase(
                 responseTypeInput = responseType,
                 redirectUri = redirectUri,
                 scope = scope,
+                nonce = nonce,
             ).fold({
                 return when (it) {
                     ClientNotExist -> AuthorizationApplicationError.ClientNotExist.left()

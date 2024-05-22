@@ -45,6 +45,7 @@ class GetAuthorizeUseCase(
         scope: String?,
         state: String?,
         prompt: String?,
+        nonce: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         val request =
@@ -55,6 +56,7 @@ class GetAuthorizeUseCase(
                 redirectUri = redirectUri,
                 scope = scope,
                 prompt = prompt,
+                nonce = nonce,
             ).fold({
                 return when (it) {
                     ClientNotExist -> AuthorizationApplicationError.ClientNotExist.left()
@@ -70,11 +72,12 @@ class GetAuthorizeUseCase(
 
         val consentUrl =
             consentUrlGenerator.generate(
-                clientId,
-                responseType,
-                redirectUri,
-                scope,
-                state,
+                clientId = clientId,
+                responseType = responseType,
+                redirectUri = redirectUri,
+                scope = scope,
+                state = state,
+                nonce = nonce,
             )
         if (request.user == null || request.promptSet.contains(Prompt.LOGIN) || request.promptSet.contains(Prompt.SELECT_ACCOUNT)) {
             return Response(loginUrlGenerator.generate(consentUrl)).right()

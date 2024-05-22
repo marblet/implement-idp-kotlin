@@ -39,6 +39,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
+                    nonce = "nonce123",
                 )
 
             val request = actual.getOrNull()
@@ -46,6 +47,7 @@ class ValidatedGrantRequestTest {
             assertThat(request?.responseType).isEqualTo(ResponseType.CODE)
             assertThat(request?.consentedScopes).isEqualTo(ConsentedScopes(setOf("openid", "email")))
             assertThat(request?.user).isEqualTo(user)
+            assertThat(request?.nonce).isEqualTo("nonce123")
         }
     }
 
@@ -60,6 +62,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "test",
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -76,6 +79,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email test",
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -92,6 +96,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid",
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -110,6 +115,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "id_token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid",
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -126,6 +132,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "id_token token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "email",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
@@ -143,6 +150,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code id_token token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -159,6 +167,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code token",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "test",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
@@ -176,6 +185,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ClientNotExist)
@@ -190,6 +200,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(UserNotFound)
@@ -204,6 +215,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "invalid",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ResponseTypeInvalid)
@@ -218,6 +230,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code",
                     redirectUri = RedirectUri("http://invalid-uri.com"),
                     scope = "openid email",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(RedirectUriInvalid)
@@ -232,6 +245,7 @@ class ValidatedGrantRequestTest {
                     responseTypeInput = "code",
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid invalid-scope",
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)

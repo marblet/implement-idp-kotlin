@@ -9,6 +9,7 @@ class ValidatedGrantRequest private constructor(
     val responseType: ResponseType,
     val consentedScopes: ConsentedScopes,
     val user: User,
+    val nonce: String?,
 ) {
     companion object {
         fun create(
@@ -17,6 +18,7 @@ class ValidatedGrantRequest private constructor(
             responseTypeInput: String,
             redirectUri: RedirectUri,
             scope: String,
+            nonce: String?,
         ): Either<GrantRequestCreateError, ValidatedGrantRequest> {
             if (client == null) {
                 return GrantRequestCreateError.ClientNotExist.left()
@@ -38,6 +40,7 @@ class ValidatedGrantRequest private constructor(
                 responseType = responseType,
                 consentedScopes = consentedScopes,
                 user = user,
+                nonce = nonce,
             ).right()
         }
     }

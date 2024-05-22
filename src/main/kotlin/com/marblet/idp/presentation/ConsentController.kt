@@ -31,17 +31,19 @@ class ConsentController(
         @RequestParam scope: String?,
         @RequestParam state: String?,
         @RequestParam prompt: String?,
+        @RequestParam nonce: String?,
         @CookieValue("login") loginCookie: String?,
         model: Model,
     ): String {
         return getConsentScreenUseCase.run(
-            ClientId(clientId),
-            responseType,
-            RedirectUri(redirectUri),
-            scope,
-            state,
-            prompt,
-            loginCookie,
+            clientId = ClientId(clientId),
+            responseType = responseType,
+            redirectUri = RedirectUri(redirectUri),
+            scope = scope,
+            state = state,
+            prompt = prompt,
+            nonce = nonce,
+            loginCookie = loginCookie,
         ).fold(
             { throw GetConsentScreenException(it, state) },
             {
@@ -52,6 +54,7 @@ class ConsentController(
                 model.addAttribute("responseType", responseType)
                 model.addAttribute("redirectUri", redirectUri)
                 model.addAttribute("state", state)
+                model.addAttribute("nonce", nonce)
                 "consent"
             },
         )
@@ -72,15 +75,17 @@ class ConsentController(
         @RequestParam(name = "redirect_uri") redirectUri: String,
         @RequestParam scope: String,
         @RequestParam state: String?,
+        @RequestParam nonce: String?,
         @CookieValue("login") loginCookie: String?,
     ): String {
         return grantUseCase.run(
-            ClientId(clientId),
-            responseType,
-            RedirectUri(redirectUri),
-            scope,
-            state,
-            loginCookie,
+            clientId = ClientId(clientId),
+            responseType = responseType,
+            redirectUri = RedirectUri(redirectUri),
+            scope = scope,
+            state = state,
+            nonce = nonce,
+            loginCookie = loginCookie,
         ).fold(
             { throw GrantException(it, state) },
             { "redirect:${it.redirectTo}" },

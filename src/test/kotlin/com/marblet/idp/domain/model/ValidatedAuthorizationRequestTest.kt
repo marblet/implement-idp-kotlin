@@ -42,6 +42,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
                     prompt = "none",
+                    nonce = "nonce123",
                 )
 
             val request = actual.getOrNull()
@@ -50,6 +51,7 @@ class ValidatedAuthorizationRequestTest {
             assertThat(request?.requestScopes).isEqualTo(RequestScopes(setOf("openid", "email")))
             assertThat(request?.promptSet).isEqualTo(PromptSet(setOf(NONE)))
             assertThat(request?.user).isEqualTo(user)
+            assertThat(request?.nonce).isEqualTo("nonce123")
         }
     }
 
@@ -65,6 +67,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "test",
                     prompt = null,
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -82,6 +85,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid",
                     prompt = null,
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -102,6 +106,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid",
                     prompt = null,
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -119,6 +124,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "email",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
@@ -137,6 +143,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
                     prompt = null,
+                    nonce = null,
                 )
 
             val request = actual.getOrNull()
@@ -154,6 +161,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "test",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)
@@ -172,6 +180,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ClientNotExist)
@@ -187,6 +196,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ResponseTypeInvalid)
@@ -202,6 +212,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://invalid-uri.com"),
                     scope = "openid email",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(RedirectUriInvalid)
@@ -217,6 +228,7 @@ class ValidatedAuthorizationRequestTest {
                     redirectUri = RedirectUri("http://example.com"),
                     scope = "openid email invalid-scope",
                     prompt = null,
+                    nonce = null,
                 )
 
             assertThat(actual.leftOrNull()).isEqualTo(ScopeInvalid)

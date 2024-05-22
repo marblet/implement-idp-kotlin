@@ -15,6 +15,10 @@ class IdTokenConverter(
     private val rsaKeyConfig: RsaKeyConfig,
     private val appConfig: AppConfig,
 ) : IdTokenConverter {
+    companion object {
+        private const val NONCE_KEY = "nonce"
+    }
+
     private val algorithm = Algorithm.RSA256(null, rsaKeyConfig.rsaPrivateKey)
 
     override fun encode(payload: IdTokenPayload): String {
@@ -25,6 +29,7 @@ class IdTokenConverter(
             .withAudience(payload.clientId.value)
             .withIssuedAt(Instant.ofEpochSecond(payload.issuedAt.atZone(ZoneId.systemDefault()).toEpochSecond()))
             .withExpiresAt(Instant.ofEpochSecond(payload.expiration.atZone(ZoneId.systemDefault()).toEpochSecond()))
+            .also { jwt -> payload.nonce?.let { jwt.withClaim(NONCE_KEY, it) } }
             .sign(algorithm)
     }
 }

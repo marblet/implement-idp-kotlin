@@ -28,6 +28,7 @@ class AuthorizationController(
         @RequestParam scope: String?,
         @RequestParam state: String?,
         @RequestParam prompt: String?,
+        @RequestParam nonce: String?,
         @CookieValue("login") loginCookie: String?,
     ): ResponseEntity<Void> {
         return getAuthorizeUseCase.run(
@@ -37,6 +38,7 @@ class AuthorizationController(
             scope,
             state,
             prompt,
+            nonce,
             loginCookie,
         ).fold(
             { throw GetAuthorizeException(it, state) },

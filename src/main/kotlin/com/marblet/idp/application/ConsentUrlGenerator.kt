@@ -14,6 +14,7 @@ class ConsentUrlGenerator {
         redirectUri: RedirectUri,
         scope: String?,
         state: String?,
+        nonce: String?,
     ): String {
         val builder =
             UriComponentsBuilder
@@ -24,6 +25,7 @@ class ConsentUrlGenerator {
                 .queryParam("redirect_uri", redirectUri.value)
         scope?.let { builder.queryParam("scope", it) }
         state?.let { builder.queryParam("state", it) }
+        nonce?.let { builder.queryParam("nonce", it) }
         return builder.build().toUriString()
     }
 }
