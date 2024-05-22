@@ -19,4 +19,22 @@ class TokenScopesTest {
 
         assertThat(actual).isEqualTo("a b c")
     }
+
+    @Test
+    fun returnTrueIfScopesHasOpenidScope() {
+        val target = TokenScopes(setOf("openid", "email"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isTrue()
+    }
+
+    @Test
+    fun returnFalseIfNoOpenidScope() {
+        val target = TokenScopes(setOf("a", "b"))
+
+        val actual = target.hasOpenidScope()
+
+        assertThat(actual).isFalse()
+    }
 }

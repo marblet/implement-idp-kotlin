@@ -8,8 +8,9 @@ import com.marblet.idp.configration.EndpointPath
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -17,8 +18,24 @@ import org.springframework.web.bind.annotation.RestController
 class UserInfoController(private val getUserInfoUseCase: GetUserInfoUseCase) {
     @GetMapping
     fun get(
-        @RequestParam(name = "access_token") accessToken: String,
-    ) = getUserInfoUseCase.run(accessToken).fold(
+        @RequestHeader("Authorization") authorizationHeader: String,
+    ) = getUserInfoUseCase.run(authorizationHeader).fold(
+        { throw UserInfoException(it) },
+        {
+            ResponseBody(
+                sub = it.sub,
+                name = it.name,
+                email = it.email,
+                phoneNumber = it.phoneNumber,
+                address = it.address,
+            )
+        },
+    )
+
+    @PostMapping
+    fun post(
+        @RequestHeader("Authorization") authorizationHeader: String,
+    ) = getUserInfoUseCase.run(authorizationHeader).fold(
         { throw UserInfoException(it) },
         {
             ResponseBody(
