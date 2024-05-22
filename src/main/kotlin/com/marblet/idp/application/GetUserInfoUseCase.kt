@@ -20,9 +20,14 @@ class GetUserInfoUseCase(
     private val accessTokenConverter: AccessTokenConverter,
     private val userInfoRepository: UserInfoRepository,
 ) {
-    fun run(accessToken: String): Either<Error, Response> {
+    fun run(authorizationHeader: String): Either<Error, Response> {
+        if (!authorizationHeader.startsWith("Bearer ") && !authorizationHeader.startsWith("bearer ")) {
+            return InvalidToken.left()
+        }
+        val accessToken = authorizationHeader.substring(7)
         val accessTokenPayload = accessTokenConverter.decode(accessToken) ?: return InvalidToken.left()
-        val userInfoRequestScopes = UserInfoRequestScopes.generate(accessTokenPayload.scopes) ?: return InsufficientScope.left()
+        if (!accessTokenPayload.scopes.hasOpenidScope()) return InsufficientScope.left()
+        val userInfoRequestScopes = UserInfoRequestScopes.generate(accessTokenPayload.scopes) ?: UserInfoRequestScopes(setOf())
         val userInfo = userInfoRepository.get(accessTokenPayload.userId) ?: return UserNotFound.left()
         val userInfoResponse = userInfo.toUserInfoResponse(userInfoRequestScopes)
         return Response(
