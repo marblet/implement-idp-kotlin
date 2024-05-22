@@ -28,6 +28,7 @@ class GetConsentScreenUseCase(
         scope: String?,
         state: String?,
         prompt: String?,
+        nonce: String?,
         loginCookie: String?,
     ): Either<AuthorizationApplicationError, Response> {
         val request =
@@ -38,6 +39,7 @@ class GetConsentScreenUseCase(
                 redirectUri = redirectUri,
                 scope = scope,
                 prompt = prompt,
+                nonce = nonce,
             ).fold({
                 return when (it) {
                     ClientNotExist -> AuthorizationApplicationError.ClientNotExist.left()

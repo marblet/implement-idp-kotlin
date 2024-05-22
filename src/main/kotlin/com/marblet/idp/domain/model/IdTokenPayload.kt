@@ -7,6 +7,7 @@ data class IdTokenPayload(
     val clientId: ClientId,
     val issuedAt: LocalDateTime,
     val expiration: LocalDateTime,
+    val nonce: String?,
 ) {
     companion object {
         private const val EXPIRATION_SEC = 3600L
@@ -24,6 +25,7 @@ data class IdTokenPayload(
                 clientId = authorizationCode.clientId,
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+                nonce = null,
             )
         }
 
@@ -35,6 +37,7 @@ data class IdTokenPayload(
                 clientId = validatedAuthorizationRequest.client.clientId,
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+                nonce = validatedAuthorizationRequest.nonce,
             )
         }
 
@@ -45,6 +48,7 @@ data class IdTokenPayload(
                 clientId = validatedGrantRequest.client.clientId,
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
+                nonce = validatedGrantRequest.nonce,
             )
         }
     }
