@@ -25,7 +25,7 @@ data class IdTokenPayload(
                 clientId = authorizationCode.clientId,
                 issuedAt = issuedAt,
                 expiration = issuedAt.plusSeconds(EXPIRATION_SEC),
-                nonce = null,
+                nonce = authorizationCode.nonce,
             )
         }
 

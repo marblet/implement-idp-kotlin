@@ -26,6 +26,7 @@ CREATE TABLE authorization_codes (
     scope TEXT NOT NULL,
     redirect_uri TEXT NOT NULL,
     expiration DATETIME NOT NULL,
+    nonce VARCHAR(256),
     created_at DATETIME default current_timestamp,
     PRIMARY KEY (code),
     FOREIGN KEY (user_id) REFERENCES users(id),
