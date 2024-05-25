@@ -14,7 +14,7 @@ class AuthorizationCodeTest {
         val redirectUri = RedirectUri("test")
         val authorizationCodeRepository = DummyAuthorizationCodeRepository()
 
-        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, authorizationCodeRepository)
+        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, null, authorizationCodeRepository)
 
         assertThat(actual.code.length).isEqualTo(32)
         authorizationCodeRepository.haveBeenCalledOnceWith(actual)
@@ -28,7 +28,7 @@ class AuthorizationCodeTest {
         val redirectUri = RedirectUri("test")
         val authorizationCodeRepository = DummyAuthorizationCodeRepository()
 
-        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, authorizationCodeRepository)
+        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, null, authorizationCodeRepository)
 
         assertThat(actual.code).matches("^[0-9a-zA-Z]+$")
         authorizationCodeRepository.haveBeenCalledOnceWith(actual)
@@ -42,7 +42,7 @@ class AuthorizationCodeTest {
         val redirectUri = RedirectUri("test")
         val authorizationCodeRepository = DummyAuthorizationCodeRepository()
 
-        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, authorizationCodeRepository)
+        val actual = AuthorizationCode.generate(userId, clientId, scopes, redirectUri, null, authorizationCodeRepository)
 
         val currentTime = LocalDateTime.now()
         val expirationThreshold = LocalDateTime.now().plusMinutes(10)

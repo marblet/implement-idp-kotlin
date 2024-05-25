@@ -97,11 +97,12 @@ class GetAuthorizeUseCase(
         val authorizationCode =
             if (request.responseType.hasCode()) {
                 AuthorizationCode.generate(
-                    request.user.id,
-                    clientId,
-                    ConsentedScopes(request.requestScopes.value),
-                    redirectUri,
-                    authorizationCodeRepository,
+                    userId = request.user.id,
+                    clientId = clientId,
+                    scopes = ConsentedScopes(request.requestScopes.value),
+                    redirectUri = redirectUri,
+                    nonce = nonce,
+                    authorizationCodeRepository = authorizationCodeRepository,
                 )
             } else {
                 null

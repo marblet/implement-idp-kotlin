@@ -69,11 +69,12 @@ class GrantUseCase(
         val authorizationCode =
             if (request.responseType.hasCode()) {
                 AuthorizationCode.generate(
-                    request.user.id,
-                    clientId,
-                    request.consentedScopes,
-                    redirectUri,
-                    authorizationCodeRepository,
+                    userId = request.user.id,
+                    clientId = clientId,
+                    scopes = request.consentedScopes,
+                    redirectUri = redirectUri,
+                    nonce = nonce,
+                    authorizationCodeRepository = authorizationCodeRepository,
                 )
             } else {
                 null

@@ -29,6 +29,7 @@ class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
                 scopes = ConsentedScopes.fromSpaceSeparatedString(it[AuthorizationCodes.scope]),
                 redirectUri = RedirectUri(it[AuthorizationCodes.redirectUri]),
                 expiration = it[AuthorizationCodes.expiration],
+                nonce = it[AuthorizationCodes.nonce],
             )
         }
     }
@@ -41,6 +42,7 @@ class AuthorizationCodeRepositoryImpl : AuthorizationCodeRepository {
             it[scope] = authorizationCode.scopes.toSpaceSeparatedString()
             it[redirectUri] = authorizationCode.redirectUri.value
             it[expiration] = authorizationCode.expiration
+            it[nonce] = authorizationCode.nonce
         }
     }
 
@@ -58,6 +60,7 @@ object AuthorizationCodes : Table("authorization_codes") {
     val scope = text("scope")
     val redirectUri = text("redirect_uri")
     val expiration = datetime("expiration")
+    val nonce = varchar("nonce", 256).nullable()
 
     override val primaryKey = PrimaryKey(code)
 }

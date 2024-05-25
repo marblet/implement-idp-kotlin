@@ -11,6 +11,7 @@ class AuthorizationCode(
     val scopes: ConsentedScopes,
     val redirectUri: RedirectUri,
     val expiration: LocalDateTime,
+    val nonce: String?,
 ) {
     companion object {
         private const val CODE_LENGTH = 32
@@ -22,6 +23,7 @@ class AuthorizationCode(
             clientId: ClientId,
             scopes: ConsentedScopes,
             redirectUri: RedirectUri,
+            nonce: String?,
             authorizationCodeRepository: AuthorizationCodeRepository,
         ): AuthorizationCode {
             val code =
@@ -29,7 +31,7 @@ class AuthorizationCode(
                     .map { Random.nextInt(0, charPool.size).let { charPool[it] } }
                     .joinToString("")
             val expiration = LocalDateTime.now().plusMinutes(EXPIRATION_MINUTES)
-            val authorizationCode = AuthorizationCode(code, userId, clientId, scopes, redirectUri, expiration)
+            val authorizationCode = AuthorizationCode(code, userId, clientId, scopes, redirectUri, expiration, nonce)
             authorizationCodeRepository.insert(authorizationCode)
             return authorizationCode
         }
