@@ -23,8 +23,10 @@ class JwksController(private val rsaKeyConfig: RsaKeyConfig) {
                     use = "sig",
                     // TODO: Generate in RsaKeyConfig
                     n =
-                        "gRtjwICtIC_4ae33Ks7S80n32PLFEC4UtBanBFE9Pjzcpp4XWDPgbbOkNC9BZ-Jkyq6aoP_UknfJPI-" +
-                            "cIvE6IE96bPNGs6DcfZ73Cq2A9ZXTdiuuOiqMwhEgLKFVRUZZ50calENLGyi96-6lcDnwLehh-kEg7ARITmrBO0iAjFU",
+                        "nVCUpBZw_6tiEPYhZVm3IgfjprgkBjjL2L9-Y1ZLXQ8_37S5z_S26pqsyXayED_MSPYE1-mr8kBU54o-5F_" +
+                            "XnUdTzW1FxkGs2kQYvHBvapHyias6AfrMPJ_tiBIr-t0VLm1ykrhmm1VRbjRk4bVj4hd2T8HxXco9vtCwoE" +
+                            "pSiJCaRr6maiEjgOMqkp346gNZD7SGDXzC9HGjEHs5lKpXMgupllC1ygMH-kCt53oGr63oekSn2hEHO0TbV" +
+                            "L8uj0wCHKFFH6vykaOLGf5LTs1K27K6plVs0mT3zpg6gTm4pJoHtGuXiVz5ZGg5EQORt8Q70RweCGXqynsJq6dnT2A-yw",
                     e = "AQAB",
                 ),
             )

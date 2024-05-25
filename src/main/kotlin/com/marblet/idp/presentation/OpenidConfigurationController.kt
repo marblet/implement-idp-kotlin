@@ -3,7 +3,9 @@ package com.marblet.idp.presentation
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.marblet.idp.configration.AppConfig
 import com.marblet.idp.configration.EndpointPath
+import com.marblet.idp.domain.model.OpenidScope
 import com.marblet.idp.domain.model.ResponseType
+import com.marblet.idp.domain.model.UserInfoScope
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -33,5 +35,8 @@ class OpenidConfigurationController(private val appConfig: AppConfig) {
 
         @JsonProperty("response_types_supported")
         val responseTypesSupported: List<String> = ResponseType.entries.map { it.value }
+
+        @JsonProperty("scopes_supported")
+        val scopesSupported: List<String> = UserInfoScope.entries.map { it.value } + OpenidScope.entries.map { it.value }
     }
 }

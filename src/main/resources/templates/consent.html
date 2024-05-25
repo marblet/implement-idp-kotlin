@@ -22,6 +22,7 @@
     <input type="hidden" id="redirect_uri" name="redirect_uri" th:value="${redirectUri}" />
     <input th:if="${scope != null}" type="hidden" id="scope" name="scope" th:value="${scope}" />
     <input th:if="${state != null}" type="hidden" id="state" name="state" th:value="${state}" />
+    <input th:if="${nonce != null}" type="hidden" id="nonce" name="nonce" th:value="${nonce}" />
 </form>
 </body>
 </html>
